@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">NanoMovies</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello!</string>
+
+    <string name="sort_menu">Sort By</string>
+    <string name="most_popular">Most Popular</string>
+    <string name="highest_rated">Highest Rated</string>
+
+    <string name="user_rating_label">User Rating:</string>
+    <string name="release_date_label">Release Date:</string>
+    <string name="overview_label">Overview:</string>
+    <string name="popularity_label">Popularity Score:</string>
+
+</resources>
