@@ -11,7 +11,10 @@ public class MovieItem implements Parcelable
     private String poster_path = "";
     //private boolean adult;
     private String overview = "";
+
     private String release_date = "";
+    private String formattedDate = "";
+
    // private String[] genre_ids;
    // private String id;
     private String title; //skipping "original title"
@@ -42,9 +45,27 @@ public class MovieItem implements Parcelable
 
     public void setRelease_date(String release_date) {
         this.release_date = release_date;
+
+        setFormattedDate();
     }
 
     public String getRelease_date() { return release_date; }
+
+    public void setFormattedDate() {
+        formattedDate = "";
+        if(release_date != null) {
+            String dateParts[] = release_date.split("-");
+            if(dateParts.length == 3) {
+                formattedDate += dateParts[1];
+                formattedDate += "-" + dateParts[2];
+                if(dateParts[0].length() == 4)
+                    formattedDate += "-" + dateParts[0].substring(2,4);
+            }
+        }
+    }
+
+    public String getFormattedDate() { return formattedDate; }
+
 
    // public void setGenre_ids(String[] genre_ids) {
     //    this.genre_ids = genre_ids;
@@ -120,6 +141,7 @@ public class MovieItem implements Parcelable
        // out.writeValue(adult);
         out.writeString(overview);
         out.writeString(release_date);
+        out.writeString(formattedDate);
        // out.writeArray(genre_ids);
        // out.writeString(id);
         out.writeString(title);
@@ -147,6 +169,7 @@ public class MovieItem implements Parcelable
        // adult = (Boolean) in.readValue(null);
         overview = in.readString();
         release_date = in.readString();
+        formattedDate = in.readString();
        // in.readStringArray(genre_ids);
       //  id = in.readString();
         title = in.readString();
@@ -156,5 +179,6 @@ public class MovieItem implements Parcelable
        // video = in.readString();
         vote_average = in.readDouble();
     }
+
 
 }
