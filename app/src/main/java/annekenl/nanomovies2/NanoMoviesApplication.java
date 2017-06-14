@@ -14,7 +14,7 @@ public class NanoMoviesApplication extends Application
 {
     public static final String MOVIE_SETTINGS_PREFS = "MoviePosterPrefs";
     public static final String MOVIEDB_CONFIG_CHECK = "CONFIG_CHECK";
-    public static final String MOVIE_DB_API_KEY = "";
+    public static final String MOVIE_DB_API_KEY = "25d9aac1cf6aabbef22617a8bc417dfd";
 
     @Override
     public void onCreate()

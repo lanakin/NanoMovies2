@@ -56,7 +56,7 @@
                     nanomovie:poster_path="@{movieInfo.poster_path}"
                     />
 
-                <ScrollView
+                <android.support.v4.widget.NestedScrollView
                     android:layout_width="0px"
                     android:layout_weight="1"
                     android:layout_height="wrap_content">
@@ -70,84 +70,121 @@
                         android:padding="3dp"
                         android:text="@{movieInfo.overview}"
                         />
-                </ScrollView>
+                </android.support.v4.widget.NestedScrollView>
 
             </LinearLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3"
+            >
+
+                <LinearLayout
+                    android:layout_width="0px"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
                 >
-                    <TextView
-                        android:id="@+id/movieDetailsRatingsLabel"
-                        android:layout_width="115dp"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/user_rating_label"
-                        android:textStyle="bold"
-                        android:layout_margin="10dp"
-                        />
+                        >
+                            <TextView
+                                android:id="@+id/movieDetailsRatingsLabel"
+                                android:layout_width="115dp"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_rating_label"
+                                android:textStyle="bold"
+                                android:layout_margin="10dp"
+                                />
 
-                    <TextView
-                        android:id="@+id/movieDetailsRatings"
-                        android:layout_width="wrap_content"
+                            <TextView
+                                android:id="@+id/movieDetailsRatings"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="6.8"
+                                android:text="@{movieInfo.vote_average}"
+                                android:layout_toRightOf="@+id/movieDetailsRatingsLabel"
+                                android:layout_alignBaseline="@+id/movieDetailsRatingsLabel"
+
+                                />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:text="6.8"
-                        android:text="@{movieInfo.vote_average}"
-                        android:layout_toRightOf="@+id/movieDetailsRatingsLabel"
-                        android:layout_alignBaseline="@+id/movieDetailsRatingsLabel"
+                        >
+                       <TextView
+                            android:id="@+id/movieDetailsPopularityLabel"
+                            android:layout_width="115dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/popularity_label"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"
+                            />
 
+                        <TextView
+                            android:id="@+id/movieDetailsPopularity"
+                            android:layout_toRightOf="@+id/movieDetailsPopularityLabel"
+                            android:layout_alignBaseline="@+id/movieDetailsPopularityLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="111.02"
+                            android:text="@{movieInfo.popularity}"
+                            />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        >
+                        <TextView
+                            android:id="@+id/movieDetailsReleaseDateLabel"
+                            android:layout_width="115dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/release_date_label"
+                            android:textStyle="bold"
+                            android:layout_margin="10dp"
+                            />
+
+                        <TextView
+                            android:id="@+id/movieDetailsReleaseDate"
+                            android:layout_toRightOf="@+id/movieDetailsReleaseDateLabel"
+                            android:layout_alignBaseline="@+id/movieDetailsReleaseDateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            tools:text="2017-03-16"
+                            android:text="@{movieInfo.formattedDate}"
+                            />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0px"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    >
+                        <Button
+                            android:id="@+id/button"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            android:layout_marginTop="10dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_gravity="center_horizontal"
+
+                            android:text="@string/favorite_label"
+                            android:background="@color/colorAccent"
+                            android:textColor="@android:color/white"
                         />
-            </RelativeLayout>
+                </LinearLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-               <TextView
-                    android:id="@+id/movieDetailsPopularityLabel"
-                    android:layout_width="115dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/popularity_label"
-                    android:textStyle="bold"
-                    android:layout_margin="10dp"
-                    />
-
-                <TextView
-                    android:id="@+id/movieDetailsPopularity"
-                    android:layout_toRightOf="@+id/movieDetailsPopularityLabel"
-                    android:layout_alignBaseline="@+id/movieDetailsPopularityLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="111.02"
-                    android:text="@{movieInfo.popularity}"
-                    />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-                <TextView
-                    android:id="@+id/movieDetailsReleaseDateLabel"
-                    android:layout_width="115dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/release_date_label"
-                    android:textStyle="bold"
-                    android:layout_margin="10dp"
-                    />
-
-                <TextView
-                    android:id="@+id/movieDetailsReleaseDate"
-                    android:layout_toRightOf="@+id/movieDetailsReleaseDateLabel"
-                    android:layout_alignBaseline="@+id/movieDetailsReleaseDateLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    tools:text="2017-03-16"
-                    android:text="@{movieInfo.formattedDate}"
-                    />
-            </RelativeLayout>
+            </LinearLayout> <!-- stats and button container -->
 
         </LinearLayout>
-
     </ScrollView>
 </layout>
