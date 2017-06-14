@@ -15,6 +15,8 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_DB_API_KEY;
+
 /**
  * Created by annekenl1
  */
@@ -49,7 +51,7 @@ public class MovieDBConfigParser extends AsyncTask<Void, Void, String>
 
 
                 Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
-                        .appendQueryParameter(API_PARAM, "25d9aac1cf6aabbef22617a8bc417dfd")
+                        .appendQueryParameter(API_PARAM, MOVIE_DB_API_KEY)
                         .build();
 
                 URL url = new URL(builtUri.toString());

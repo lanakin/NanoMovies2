@@ -35,6 +35,7 @@ import java.util.Comparator;
 import javax.net.ssl.HttpsURLConnection;
 
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIEDB_CONFIG_CHECK;
+import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_DB_API_KEY;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
 
@@ -47,7 +48,6 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     public static final String MOVIEDB_POSTER_SIZE= "MOVIE_POSTER_SIZE";
     public static final String MOVIE_ITEM_KEY= "MOVIE_ITEM";
 
-    //private MovieDBConfigItem movieDBConfigItem;
     private MovieAdapter mMovieAdapter;
 
     @Override
@@ -104,7 +104,6 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.movies_list_menu, menu);
     }
 
@@ -115,23 +114,18 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         // as you specify a parent activity in AndroidManifest.xml.
        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.most_popular_menu)
         {
-            //Toast.makeText(getActivity(),"most popular",Toast.LENGTH_SHORT).show();
             sortMoviesByMostPopular();
             mMovieAdapter.notifyDataSetChanged();
             return true;
         }
         else if (id == R.id.highest_rated_menu)
         {
-            //Toast.makeText(getActivity(),"highest rated",Toast.LENGTH_SHORT).show();
             sortMoviesByHighestRated();
             mMovieAdapter.notifyDataSetChanged();
             return true;
         }
-
-
 
         return super.onOptionsItemSelected(item);
     }
@@ -145,20 +139,6 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     @Override
     public void onStart() {
         super.onStart();
-        //updateMoviesList(); --not going to update every time user navigates back from a single movie item's details
-        //sortMoviesByMostPopular(); --keeps sort order unless chosen to be changed
-
-       // postersGrid.setAdapter(mMovieAdapter); --keeps scroll position
-
-        //which could be improved even further with saved positions for top and current item
-       /* stack overflow example
-       // save index and top position
-        int index = mList.getFirstVisiblePosition();
-        View v = mList.getChildAt(0);
-        int top = (v == null) ? 0 : (v.getTop() - mList.getPaddingTop());
-
-        // restore index and position
-        mList.setSelectionFromTop(index, top);*/
     }
 
 
@@ -181,16 +161,57 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
+        MovieItem mMovieItem = mMovies.get(position);
+
+        if(mMovieItem.getTrailers() == null
+                || mMovieItem.getReviews() == null)
+        {
+            //get trailers
+            new FetchTrailersTask().execute(mMovieItem); //notifydatasetchanged()
+
+            //get reviews
+            new FetchReviewsTask().execute(mMovieItem);  //" "; transitionToDetails()
+        }
+        else {
+            transitionToDetails(mMovieItem);
+        }
+    }
+
+    private void transitionToDetails(MovieItem movieItem)
+    {
         MoviesListDetailsFragment frag = new MoviesListDetailsFragment();
 
         Bundle mArgs = new Bundle();
-        mArgs.putParcelable(MOVIE_ITEM_KEY,mMovies.get(position));
+        mArgs.putParcelable(MOVIE_ITEM_KEY,movieItem);
         frag.setArguments(mArgs);
 
         getActivity().getSupportFragmentManager().beginTransaction()
                 .replace(R.id.container, frag)
                 .addToBackStack("movie_list_details")
                 .commit();
+    }
+
+
+    private void sortMoviesByMostPopular()
+    {
+        Collections.sort(mMovies, new Comparator<MovieItem>() {
+            public int compare(MovieItem o1, MovieItem o2) {
+                return Double.compare(o1.getPopularity(),o2.getPopularity());
+            }
+        });
+
+        Collections.reverse(mMovies); //greatest to least
+    }
+
+    private void sortMoviesByHighestRated()
+    {
+        Collections.sort(mMovies, new Comparator<MovieItem>() {
+            public int compare(MovieItem o1, MovieItem o2) {
+                return Double.compare(o1.getVote_average(),o2.getVote_average());
+            }
+        });
+
+        Collections.reverse(mMovies); //greatest to least
     }
 
 
@@ -239,10 +260,6 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
 
 
     //Typical AsyncTask for network query. Modified from example Sunshine app in Udacity Android Nanodegree
-    /*
-    *  movie object keys: poster_path, adult, overview, release_date, genre_ids, id, original_title, original_language,
-    *  title, backdrop_path, popularity, vote_count, video, vote_average
-     */
     private class FetchMoviesTask extends AsyncTask<Void, Void, String>
     {
         @Override
@@ -265,7 +282,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
 
 
                 Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
-                        .appendQueryParameter(API_PARAM, "25d9aac1cf6aabbef22617a8bc417dfd")  //note should be careful not to let api keys be saved in public repos*
+                        .appendQueryParameter(API_PARAM, MOVIE_DB_API_KEY)
                         //optional
                         .appendQueryParameter(PAGE_PARAM, "1")
                         .build();
@@ -313,7 +330,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
                 }
             }
 
-            Log.d(FetchMoviesTask.class.getSimpleName(), moviesJsonStr);
+            //Log.d(FetchMoviesTask.class.getSimpleName(), moviesJsonStr);
 
             return moviesJsonStr;
         }
@@ -328,7 +345,6 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         }
 
     }
-
 
     private void parseMovieJson(String json)
     {
@@ -359,12 +375,142 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
                     movieItem.setTitle(currMovie.getString("title"));
                     movieItem.setPopularity(currMovie.getDouble("popularity"));
                     movieItem.setVote_average(currMovie.getDouble("vote_average"));
-                    //backdrop image
+
+                    movieItem.setId(currMovie.getInt("id")+"");
+                    //movieItem.setIsVideos(currMovie.getBoolean("video")); //all results have this as false...
+
+                    //get trailers
+                    //new FetchTrailersTask().execute(movieItem); //notifydatasetchanged
+
+                    //get reviews
+                    //new FetchReviewsTask().execute(movieItem); //this is about 40 asynctasks total here, it works but could be
+                                                   //problematic and unnecessary until user wants additional details for a movie
                     mMovies.add(movieItem);
                 }
 
                 sortMoviesByMostPopular();
-                postersGrid.setAdapter(mMovieAdapter);
+                mMovieAdapter.notifyDataSetChanged();
+               //postersGrid.setAdapter(mMovieAdapter);
+
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //Typical AsyncTask for network query. Modified from example Sunshine app in Udacity Android Nanodegree
+    private class FetchTrailersTask extends AsyncTask<MovieItem, Void, String>
+    {
+        MovieItem currMovie = null;
+
+        @Override
+        protected String doInBackground(MovieItem... params)
+        {
+            HttpsURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String trailersJsonStr = null;
+
+            if (params.length == 0)
+                return null;
+
+            currMovie = params[0];
+
+            try {
+                // Construct the URL for The Movie Database API
+                final String TMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
+                final String API_PARAM = "api_key";
+
+                Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
+                        .appendPath(currMovie.getId())
+                        .appendPath("videos")
+                        .appendQueryParameter(API_PARAM, MOVIE_DB_API_KEY)
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                urlConnection = (HttpsURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                trailersJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e("PlaceholderFragment", "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("Trailers", "Error closing stream", e);
+                    }
+                }
+            }
+
+            //Log.d(FetchTrailersTask.class.getSimpleName(), trailersJsonStr);
+
+            return trailersJsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            if(result != null) {
+
+                parseTrailersJson(result,currMovie);
+            }
+        }
+
+    }
+
+    private void parseTrailersJson(String json, MovieItem movieItem)
+    {
+        try
+        {
+            JSONObject mainObj = new JSONObject(json);
+
+            if(mainObj.has("results"))
+            {
+                JSONArray results = mainObj.getJSONArray("results");
+
+                String[] tempArr = new String[results.length()];
+
+                for(int i = 0; i < results.length(); i++)
+                {
+                    JSONObject currTrailerInfo = results.getJSONObject(i);
+
+                    //getting just the info. needed to create youtube trailer
+                    tempArr[i] = currTrailerInfo.getString("key");
+                }
+
+                movieItem.setTrailers(tempArr);
+
+                mMovieAdapter.notifyDataSetChanged();
             }
         }
         catch (Exception e) {
@@ -373,27 +519,130 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     }
 
 
-    private void sortMoviesByMostPopular()
+    //Typical AsyncTask for network query. Modified from example Sunshine app in Udacity Android Nanodegree
+    private class FetchReviewsTask extends AsyncTask<MovieItem, Void, String>
     {
-        Collections.sort(mMovies, new Comparator<MovieItem>() {
-            public int compare(MovieItem o1, MovieItem o2) {
-                return Double.compare(o1.getPopularity(),o2.getPopularity());
-            }
-        });
+        MovieItem currMovie = null;
 
-        Collections.reverse(mMovies); //greatest to least
+        @Override
+        protected String doInBackground(MovieItem... params)
+        {
+            HttpsURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String reviewsJsonStr = null;
+
+            if (params.length == 0)
+                return null;
+
+            currMovie = params[0];
+
+            try {
+                // Construct the URL for The Movie Database API
+                final String TMDB_BASE_URL = "https://api.themoviedb.org/3/movie/";
+                final String API_PARAM = "api_key";
+                final String PAGE_PARAM = "page";
+
+
+                Uri builtUri = Uri.parse(TMDB_BASE_URL).buildUpon()
+                        .appendPath(currMovie.getId())
+                        .appendPath("reviews")
+                        .appendQueryParameter(API_PARAM, MOVIE_DB_API_KEY)
+                        //optional
+                        .appendQueryParameter(PAGE_PARAM, "1")
+                        .build();
+
+                URL url = new URL(builtUri.toString());
+
+                urlConnection = (HttpsURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                reviewsJsonStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e("PlaceholderFragment", "Error ", e);
+                // If the code didn't successfully get the data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("Trailers", "Error closing stream", e);
+                    }
+                }
+            }
+
+            //Log.d(FetchReviewsTask.class.getSimpleName(), reviewsJsonStr);
+
+            return reviewsJsonStr;
+        }
+
+        @Override
+        protected void onPostExecute(String result)
+        {
+            if(result != null) {
+
+                parseReviewsJson(result,currMovie);
+            }
+        }
+
     }
 
-    private void sortMoviesByHighestRated()
+    private void parseReviewsJson(String json, MovieItem movieItem)
     {
-        Collections.sort(mMovies, new Comparator<MovieItem>() {
-            public int compare(MovieItem o1, MovieItem o2) {
-                return Double.compare(o1.getVote_average(),o2.getVote_average());
+        try
+        {
+            JSONObject mainObj = new JSONObject(json);
+
+            if(mainObj.has("results"))
+            {
+                JSONArray results = mainObj.getJSONArray("results");
+
+                String[] tempArr = new String[results.length()];
+
+                for(int i = 0; i < results.length(); i++)
+                {
+                    JSONObject currTrailerInfo = results.getJSONObject(i);
+
+                    //getting just the url
+                    tempArr[i] = currTrailerInfo.getString("url");
+                }
+
+                movieItem.setReviews(tempArr);
+                Log.d("reviews parse",movieItem.getTitle());
+
+                mMovieAdapter.notifyDataSetChanged();
+
+                transitionToDetails(movieItem); //this method and getReviews async task only called from onItemClick()
             }
-        });
-
-        Collections.reverse(mMovies); //greatest to least
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
 
 }

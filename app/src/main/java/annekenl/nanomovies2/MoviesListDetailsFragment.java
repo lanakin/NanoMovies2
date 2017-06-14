@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.databinding.BindingAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,12 @@ public class MoviesListDetailsFragment extends Fragment
         //setHasOptionsMenu(true);
 
         mMovieItem = getArguments().getParcelable(MoviesListFragment.MOVIE_ITEM_KEY);
+
+        String[] testArr = mMovieItem.getTrailers();
+        Log.e("trailers",testArr.length+"");
+
+        String[] testArr2 = mMovieItem.getReviews();
+        Log.e("reviews",testArr2.length+"");
     }
 
     @Override
@@ -45,7 +52,6 @@ public class MoviesListDetailsFragment extends Fragment
 
         binding.setMovieInfo(mMovieItem);
 
-
         return rootView;
     }
 
@@ -58,7 +64,6 @@ public class MoviesListDetailsFragment extends Fragment
         SharedPreferences prefs =  view.getContext().getSharedPreferences(MOVIE_SETTINGS_PREFS, 0);
         String baseUrl = prefs.getString(MoviesListFragment.MOVIE_POSTER_BASE_URL,"");
         String posterSize = prefs.getString(MoviesListFragment.MOVIEDB_POSTER_SIZE, "");
-        //String posterPath = mMovieItem.getPoster_path();
 
         String posterUrl = baseUrl + posterSize + posterPath;
 
