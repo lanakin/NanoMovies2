@@ -237,7 +237,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         {
             if (convertView == null) { // if it's not recycled, initialize some attributes
                 LayoutInflater inflater = getActivity().getLayoutInflater();
-                convertView = inflater.inflate(R.layout.movies_posters_list_item,
+                convertView = inflater.inflate(R.layout.fragment_movies_list_item,
                         container, false);
             }
 

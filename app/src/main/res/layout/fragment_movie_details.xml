@@ -9,12 +9,12 @@
     <ScrollView
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             >
 
             <LinearLayout
@@ -40,7 +40,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="225dp"
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:layout_margin="5dp"
@@ -66,7 +66,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        tools:text="this is a sentence summary of the movie"
+                        tools:text="this is a short summary of the movie"
                         android:padding="3dp"
                         android:text="@{movieInfo.overview}"
                         />
@@ -86,7 +86,7 @@
                     android:layout_weight="2"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                >
+                    >
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -110,7 +110,6 @@
                                 android:layout_alignBaseline="@+id/movieDetailsRatingsLabel"
 
                                 />
-
                     </RelativeLayout>
 
                     <RelativeLayout
@@ -183,8 +182,48 @@
                         />
                 </LinearLayout>
 
-            </LinearLayout> <!-- stats and button container -->
+        </LinearLayout> <!-- stats and button container -->
+
+        <!-- trailers and reviews -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:orientation="horizontal"
+            android:background="@android:color/black"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            >
+                <include layout="@layout/details_links_row"
+                    android:id="@+id/movieDetailsTrailerChoices"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    />
+
+                <include layout="@layout/details_links_row"
+                    android:id="@+id/movieDetailsReviewChoices"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    />
 
         </LinearLayout>
-    </ScrollView>
+
+        <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="1dp"
+             android:orientation="horizontal"
+             android:background="@android:color/black"
+             android:layout_marginLeft="8dp"
+             android:layout_marginRight="8dp"
+             android:layout_marginBottom="2dp" />
+
+        </LinearLayout> <!-- overall container -->
+ </ScrollView>
 </layout>

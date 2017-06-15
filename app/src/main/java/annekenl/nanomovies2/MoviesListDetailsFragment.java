@@ -1,19 +1,23 @@
 package annekenl.nanomovies2;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.BindingAdapter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import annekenl.nanomovies2.databinding.FragmentMovieListDetailsV3Binding;
+import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
 
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
@@ -24,6 +28,9 @@ import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 public class MoviesListDetailsFragment extends Fragment
 {
     private MovieItem mMovieItem = null;
+    private FragmentMovieDetailsBinding binding;
+    private Spinner trailersChoices;
+    private Spinner reviewsChoices;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -44,15 +51,95 @@ public class MoviesListDetailsFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View rootView = inflater.inflate(R.layout.fragment_movie_list_details_v3, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
 
         //data binding
-        FragmentMovieListDetailsV3Binding binding
-                = FragmentMovieListDetailsV3Binding.bind(rootView);
-
+        binding = FragmentMovieDetailsBinding.bind(rootView);
         binding.setMovieInfo(mMovieItem);
 
+        /* TRAILERS */
+        setupTrailers();
+
+        /* REVIEWS */
+        setupReviews();
+
         return rootView;
+    }
+
+    private void setupTrailers()
+    {
+        binding.movieDetailsTrailerChoices.detailsChoicesHeader.setText("Trailers:");
+
+        trailersChoices = binding.movieDetailsTrailerChoices.itemSpinner;
+        if(!(mMovieItem.getTrailers().length==0))
+        {
+            final String[] trailers = mMovieItem.getTrailers();
+            trailersChoices.setAdapter(new ArrayItemAdapter(trailers,"Trailer"));
+
+            //didn't like that spinner behavior is such that i couldn't play the same selected item twice/multiple times
+            /*trailersChoices.post(new Runnable() {
+                @Override
+                public void run() {
+                    trailersChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                //String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
+                                //String youtubeKey = trailers[position];
+
+                                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeBaseUrl + youtubeKey)));
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {
+                            //do nothing - this is not however called if don't change the item...
+                        }
+                    });
+                }
+            });*/
+
+            ImageView img = binding.movieDetailsTrailerChoices.itemIcon;
+            img.setImageResource(R.drawable.ic_play_arrow_black_24px);
+            img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String youtubeKey = (String) trailersChoices.getSelectedItem();
+                    String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
+
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeBaseUrl + youtubeKey)));
+                }
+            });
+        }
+        else {
+            binding.movieDetailsTrailerChoices.zeroItems.setVisibility(View.VISIBLE);
+            binding.movieDetailsTrailerChoices.detailsChoicesRow.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupReviews()
+    {
+        binding.movieDetailsReviewChoices.detailsChoicesHeader.setText("Reviews:");
+
+        reviewsChoices = binding.movieDetailsReviewChoices.itemSpinner;
+        if(!(mMovieItem.getReviews().length==0))
+        {
+            final String[] reviews = mMovieItem.getReviews();
+            reviewsChoices.setAdapter(new ArrayItemAdapter(reviews,"Review"));
+
+            ImageView img = binding.movieDetailsReviewChoices.itemIcon;
+            img.setImageResource(R.drawable.ic_description_black_24px);
+            img.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String article = (String) reviewsChoices.getSelectedItem();
+
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(article)));
+                }
+            });
+        }
+        else {
+            binding.movieDetailsReviewChoices.zeroItems.setVisibility(View.VISIBLE);
+            binding.movieDetailsReviewChoices.detailsChoicesRow.setVisibility(View.GONE);
+        }
     }
 
 
@@ -81,12 +168,56 @@ public class MoviesListDetailsFragment extends Fragment
     }
 
 
+    private class ArrayItemAdapter extends BaseAdapter
+    {
+        private String[] items;
+        private String type;
+
+        public ArrayItemAdapter(String[] items, String type) {
+            this.items = items;
+            this.type = type;
+        }
+
+        @Override
+        public int getCount() {
+            return items.length;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return items[position];
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            //String item = (String) getItem(position);
+
+            if (convertView == null) { // if it's not recycled, initialize some attributes
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                convertView = inflater.inflate(R.layout.my_spinner,
+                        parent, false);
+            }
+
+            TextView txt = (TextView) convertView.findViewById(R.id.mySpinnerTV);
+            txt.setText(type+" "+ (position+1));
+
+            return convertView;
+        }
+    }
+
+
 
       /* @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
         {
-        View rootView = inflater.inflate(R.layout.fragment_movie_list_details_v3, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
 
 
         ImageView poster = (ImageView) rootView.findViewById(R.id.movieDetailsImageView);

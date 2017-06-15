@@ -67,7 +67,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        tools:text="this is a sentence summary of the movie"
+                        tools:text="this is a short summary of the movie"
                         android:padding="3dp"
                         android:text="@{movieInfo.overview}"
                         />
@@ -157,24 +157,48 @@
                         tools:text="2017-03-16"
                         android:text="@{movieInfo.formattedDate}"
                         />
-
-                    <!--<Button
-                        android:id="@+id/button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-
-                        android:layout_toRightOf="@+id/movieDetailsReleaseDate"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_gravity="center_horizontal"
-
-                        android:text="@string/favorite_label"
-                        android:background="@color/colorAccent"
-                        android:textColor="@android:color/white"
-                    />-->
-
             </RelativeLayout>
+
+            <!-- trailers and reviews -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:orientation="horizontal"
+                android:background="@android:color/black"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                >
+                <include layout="@layout/details_links_row"
+                    android:id="@+id/movieDetailsTrailerChoices"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    />
+
+                <include layout="@layout/details_links_row"
+                    android:id="@+id/movieDetailsReviewChoices"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:orientation="horizontal"
+                android:background="@android:color/black"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="2dp" />
+
 
         </LinearLayout>
     </ScrollView>
