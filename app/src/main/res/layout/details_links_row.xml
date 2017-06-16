@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     >
     <data>
-        <variable name="movieInfo" type="annekenl.nanomovies2.MovieItem"/>
+        <variable name="movieInfo" type="annekenl.nanomovies2.utility.MovieItem"/>
     </data>
     <LinearLayout
         android:layout_width="match_parent"

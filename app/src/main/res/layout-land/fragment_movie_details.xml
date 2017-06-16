@@ -4,7 +4,7 @@
     xmlns:nanomovie="http://schemas.android.com/apk/res-auto"
     >
     <data>
-        <variable name="movieInfo" type="annekenl.nanomovies2.MovieItem"/>
+        <variable name="movieInfo" type="annekenl.nanomovies2.utility.MovieItem"/>
     </data>
     <ScrollView
         android:orientation="vertical"
@@ -74,7 +74,7 @@
                 </android.support.v4.widget.NestedScrollView>
 
                 <Button
-                    android:id="@+id/button"
+                    android:id="@+id/favButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 

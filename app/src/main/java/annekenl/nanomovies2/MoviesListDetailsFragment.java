@@ -14,11 +14,14 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
+import annekenl.nanomovies2.utility.MovieItem;
 
+import static android.widget.Toast.makeText;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
 /**
@@ -29,8 +32,6 @@ public class MoviesListDetailsFragment extends Fragment
 {
     private MovieItem mMovieItem = null;
     private FragmentMovieDetailsBinding binding;
-    private Spinner trailersChoices;
-    private Spinner reviewsChoices;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -57,17 +58,30 @@ public class MoviesListDetailsFragment extends Fragment
         binding = FragmentMovieDetailsBinding.bind(rootView);
         binding.setMovieInfo(mMovieItem);
 
-        /* TRAILERS */
         setupTrailers();
-
-        /* REVIEWS */
         setupReviews();
+
+        binding.favButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                markAsFavorite(v);
+            }
+        });
 
         return rootView;
     }
 
+    //Favorite Button
+    private void markAsFavorite(View v)
+    {
+        Toast t = makeText(getActivity(),"FAVORITED!", Toast.LENGTH_SHORT);
+        t.show();
+    }
+
     private void setupTrailers()
     {
+        final Spinner trailersChoices;
+
         binding.movieDetailsTrailerChoices.detailsChoicesHeader.setText("Trailers:");
 
         trailersChoices = binding.movieDetailsTrailerChoices.itemSpinner;
@@ -76,8 +90,8 @@ public class MoviesListDetailsFragment extends Fragment
             final String[] trailers = mMovieItem.getTrailers();
             trailersChoices.setAdapter(new ArrayItemAdapter(trailers,"Trailer"));
 
-            //didn't like that spinner behavior is such that i couldn't play the same selected item twice/multiple times
-            /*trailersChoices.post(new Runnable() {
+            //didn't like that spinner behavior is such that i couldn't play the same selected item twice/multiple times in a row
+            /*trailersChoices.post(new Runnable() { //queued to not run on initial load
                 @Override
                 public void run() {
                     trailersChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -117,6 +131,8 @@ public class MoviesListDetailsFragment extends Fragment
 
     private void setupReviews()
     {
+        final Spinner reviewsChoices;
+
         binding.movieDetailsReviewChoices.detailsChoicesHeader.setText("Reviews:");
 
         reviewsChoices = binding.movieDetailsReviewChoices.itemSpinner;

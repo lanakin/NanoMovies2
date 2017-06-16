@@ -1,4 +1,4 @@
-package annekenl.nanomovies2;
+package annekenl.nanomovies2.utility;
 
 import android.net.Uri;
 import android.os.AsyncTask;

@@ -1,4 +1,4 @@
-package annekenl.nanomovies2;
+package annekenl.nanomovies2.utility;
 
 /**  //https://developers.themoviedb.org/3/configuration/get-api-configuration
  * Get the system wide configuration information. Some elements of the API require some knowledge of this configuration data.

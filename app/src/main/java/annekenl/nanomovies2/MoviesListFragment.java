@@ -34,6 +34,10 @@ import java.util.Comparator;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import annekenl.nanomovies2.utility.MovieDBConfigItem;
+import annekenl.nanomovies2.utility.MovieDBConfigParser;
+import annekenl.nanomovies2.utility.MovieItem;
+
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIEDB_CONFIG_CHECK;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_DB_API_KEY;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
