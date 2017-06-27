@@ -18,7 +18,6 @@ package annekenl.nanomovies2;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -39,7 +38,7 @@ import annekenl.nanomovies2.favdata.FavoritesDbHelper;
 import annekenl.nanomovies2.favdata.FavoritesProvider;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.fail;
 
 //import com.example.android.todolist.data.TaskContentProvider;
@@ -79,7 +78,7 @@ public class TestContentProvider {
      * added a <provider/> tag and that you've properly specified the android:authorities attribute.
      */
     @Test
-    public void testProviderRegistry() {
+    public void testProviderRegistry() { //works
 
         /*
          * A ComponentName is an identifier for a specific application component, such as an
@@ -147,7 +146,7 @@ public class TestContentProvider {
      * ready to test your UriMatcher.
      */
     @Test
-    public void testUriMatcher() {
+    public void testUriMatcher() { //works
 
         /* Create a URI matcher that the FavoritesContentProvider uses */
         UriMatcher testMatcher = FavoritesProvider.buildUriMatcher();
@@ -176,15 +175,12 @@ public class TestContentProvider {
     //================================================================================
     // Test Insert
     //================================================================================
-
-
-    /**
-     * Tests inserting a single row of data via a ContentResolver
-     */
+    //* Tests inserting a single row of data via a ContentResolver
+     //
     @Test
-    public void testInsert() {
+    public void testInsert() { //works but really returning the base uri with the returned row id from db.insert()
 
-        /* Create values to insert */
+        //* Create values to insert *//*
         ContentValues testValues = new ContentValues();
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
@@ -197,59 +193,67 @@ public class TestContentProvider {
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
                 +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
 
-        /* TestContentObserver allows us to test if notifyChange was called appropriately */
+        //* TestContentObserver allows us to test if notifyChange was called appropriately *//*
         TestUtilities.TestContentObserver testObserver = TestUtilities.getTestContentObserver();
 
         ContentResolver contentResolver = mContext.getContentResolver();
 
-        /* Register a content observer to be notified of changes to data at a given URI  */
+        //* Register a content observer to be notified of changes to data at a given URI  *//*
         contentResolver.registerContentObserver(
-                /* URI that we would like to observe changes to */
+                //* URI that we would like to observe changes to *//
                 FavoritesContract.FavoriteEntry.CONTENT_URI,
-                /* Whether or not to notify us if descendants of this URI change */
+                //* Whether or not to notify us if descendants of this URI change *//
                 true,
-                /* The observer to register (that will receive notifyChange callbacks) */
-                testObserver);
+                //* The observer to register (that will receive notifyChange callbacks) *//*
+        testObserver);
 
 
-        Uri uri = contentResolver.insert(FavoritesContract.FavoriteEntry.CONTENT_URI, testValues);
+        Uri retUri = contentResolver.insert(FavoritesContract.FavoriteEntry.CONTENT_URI, testValues);
 
+        //Uri expectedUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, 1);
+        //attaches row id onto end of uri
 
-        Uri expectedUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, 1);
+         /* If the insert fails, database.insert returns -1 */
+        int valueOfIdIfInsertFails = -1;
+
+        String rowidstr = retUri.getLastPathSegment();
+        int rowid = Integer.valueOf(rowidstr);
 
         String insertProviderFailed = "Unable to insert item through Provider";
-        assertEquals(insertProviderFailed, uri, expectedUri);
 
-        /*
-         * If this fails, it's likely you didn't call notifyChange in your insert method from
-         * your ContentProvider.
-         */
+        assertFalse(insertProviderFailed,rowid==valueOfIdIfInsertFails);
+
+        //message,expected,actual
+        //assertNotSame(insertProviderFailed,valueOfIdIfInsertFails,rowid);
+
+        //assertEquals(string message, expected, actual)
+        //assertEquals(insertProviderFailed, expectedUri, retUri);
+
+        //If this fails, it's likely you didn't call notifyChange in your insert method from
+        // your ContentProvider.
         testObserver.waitForNotificationOrFail();
 
-        /*
-         * waitForNotificationOrFail is synchronous, so after that call, we are done observing
-         * changes to content and should therefore unregister this observer.
-         */
+        //waitForNotificationOrFail is synchronous, so after that call, we are done observing
+        //changes to content and should therefore unregister this observer.
         contentResolver.unregisterContentObserver(testObserver);
     }
+
+
 
 
     //================================================================================
     // Test Query (for tasks directory)
     //================================================================================
+     //Inserts data, then tests if a query for the tasks directory returns that data as a Cursor
 
-
-    /**
-     * Inserts data, then tests if a query for the tasks directory returns that data as a Cursor
-     */
     @Test
     public void testQuery() {
 
-        /* Get access to a writable database */
+        //* Get access to a writable database *//*
         FavoritesDbHelper dbHelper = new FavoritesDbHelper(mContext);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
-        /* Create values to insert */
+        //* Create values to insert *//
         ContentValues testValues = new ContentValues();
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
@@ -262,35 +266,37 @@ public class TestContentProvider {
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
                 +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
 
-        /* Insert ContentValues into database and get a row ID back */
+        //* Insert ContentValues into database and get a row ID back *//
         long taskRowId = database.insert(
-                /* Table to insert values into */
+                //* Table to insert values into *//
                 FavoritesContract.FavoriteEntry.TABLE_NAME,
                 null,
-                /* Values to insert into table */
+                //* Values to insert into table *//*
                 testValues);
 
         String insertFailed = "Unable to insert directly into the database";
-        assertTrue(insertFailed, taskRowId != -1);
+        //assertTrue(insertFailed, taskRowId != -1);
+        assertFalse(insertFailed, taskRowId == -1);
 
-        /* We are done with the database, close it now. */
+        //* We are done with the database, close it now. *//*
         database.close();
 
-        /* Perform the ContentProvider query */
+        //* Perform the ContentProvider query *//*
         Cursor taskCursor = mContext.getContentResolver().query(
                 FavoritesContract.FavoriteEntry.CONTENT_URI,
-                /* Columns; leaving this null returns every column in the table */
+                //* Columns; leaving this null returns every column in the table *//
                 null,
-                /* Optional specification for columns in the "where" clause above */
+                //* Optional specification for columns in the "where" clause above *//
                 null,
-                /* Values for "where" clause */
+                //* Values for "where" clause *//
                 null,
-                /* Sort order to return in Cursor */
+                //* Sort order to return in Cursor *//
                 null);
 
 
         String queryFailed = "Query failed to return a valid Cursor";
-        assertTrue(queryFailed, taskCursor != null);
+        //assertTrue(queryFailed, taskCursor != null);
+        assertFalse(queryFailed, taskCursor == null);
 
         /* We are done with the cursor, close it now. */
         taskCursor.close();
@@ -302,16 +308,14 @@ public class TestContentProvider {
     //================================================================================
 
 
-    /**
-     * Tests deleting a single row of data via a ContentResolver
-     */
+    //Tests deleting a single row of data via a ContentResolver
     @Test
     public void testDelete() {
-        /* Access writable database */
+        //* Access writable database *//
         FavoritesDbHelper dbHelper = new FavoritesDbHelper(mContext);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
-        /* Create a new row of task data */
+        //* Create a new row of task data *//
         ContentValues testValues = new ContentValues();
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
@@ -324,54 +328,51 @@ public class TestContentProvider {
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
                 +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
 
-        /* Insert ContentValues into database and get a row ID back */
+        //* Insert ContentValues into database and get a row ID back *//
         long taskRowId = database.insert(
-                /* Table to insert values into */
+                //* Table to insert values into *//
                 FavoritesContract.FavoriteEntry.TABLE_NAME,
                 null,
-                /* Values to insert into table */
+                //* Values to insert into table *//
                 testValues);
 
-        /* Always close the database when you're through with it */
+        //* Always close the database when you're through with it *//
         database.close();
 
         String insertFailed = "Unable to insert into the database";
-        assertTrue(insertFailed, taskRowId != -1);
+        //assertTrue(insertFailed, taskRowId != -1);
+        assertFalse(insertFailed, taskRowId == -1);
 
 
-        /* TestContentObserver allows us to test if notifyChange was called appropriately */
+        //* TestContentObserver allows us to test if notifyChange was called appropriately *//
         TestUtilities.TestContentObserver testObserver = TestUtilities.getTestContentObserver();
 
         ContentResolver contentResolver = mContext.getContentResolver();
 
-        /* Register a content observer to be notified of changes to data at a given URI (tasks) */
+        //* Register a content observer to be notified of changes to data at a given URI (tasks) *//
         contentResolver.registerContentObserver(
-                /* URI that we would like to observe changes to */
+                //* URI that we would like to observe changes to *//
                 FavoritesContract.FavoriteEntry.CONTENT_URI,
-                /* Whether or not to notify us if descendants of this URI change */
+                //* Whether or not to notify us if descendants of this URI change *//
                 true,
-                /* The observer to register (that will receive notifyChange callbacks) */
+                //* The observer to register (that will receive notifyChange callbacks) *//
                 testObserver);
 
 
 
-        /* The delete method deletes the previously inserted row with id = 1 */
-        Uri uriToDelete = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath("1").build();
+        //* The delete method deletes the previously inserted row with COLUMN_MOVIE_ID = 999999 *//
+        Uri uriToDelete = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath("999999").build();
         int tasksDeleted = contentResolver.delete(uriToDelete, null, null);
 
         String deleteFailed = "Unable to delete item in the database";
-        assertTrue(deleteFailed, tasksDeleted != 0);
+        //assertTrue(deleteFailed, tasksDeleted != 0);
+        assertFalse(deleteFailed, tasksDeleted == 0);
 
-        /*
-         * If this fails, it's likely you didn't call notifyChange in your delete method from
-         * your ContentProvider.
-         */
+        //If this fails, it's likely you didn't call notifyChange in your delete method from your ContentProvider.
         testObserver.waitForNotificationOrFail();
 
-        /*
-         * waitForNotificationOrFail is synchronous, so after that call, we are done observing
-         * changes to content and should therefore unregister this observer.
-         */
+        //*waitForNotificationOrFail is synchronous, so after that call, we are done observing
+        //changes to content and should therefore unregister this observer.
         contentResolver.unregisterContentObserver(testObserver);
     }
 
