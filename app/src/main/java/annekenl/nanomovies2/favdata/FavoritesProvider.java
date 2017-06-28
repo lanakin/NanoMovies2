@@ -156,40 +156,10 @@ public class FavoritesProvider extends ContentProvider {
                 // Insert new values into the database
                 // Inserting values into tasks table
                 long rowId = db.insert(TABLE_NAME, null, values);
-               // if ( rowId > 0 ) {
-                    returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, rowId);
-              //  } //else {
-                  //  throw new android.database.SQLException("Failed to insert row into " + uri);
-              //  }
-                break;
-            // Set the value for the returnedUri and write the default case for unknown URI's
-            // Default case throws an UnsupportedOperationException
-            default:
-                throw new UnsupportedOperationException("Unknown uri: " + uri);
-        }
-
-        // Notify the resolver if the uri has been changed, and return the newly inserted URI
-        getContext().getContentResolver().notifyChange(uri, null);
-
-        // Return constructed uri (this points to the newly inserted row of data)
-        return returnUri;
-    }
-    /*@Override
-    public Uri insert(@NonNull Uri uri, ContentValues values) {
-        // Get access to the task database (to write new data to)
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-
-        // Write URI matching code to identify the match for the favorites directory
-        int match = sUriMatcher.match(uri);
-        Uri returnUri; // URI to be returned
-
-        switch (match) {
-            case CODE_FAVORITES:
-                // Insert new values into the database
-                // Inserting values into tasks table
-                long id = db.insert(TABLE_NAME, null, values);
-                if ( id > 0 ) {
-                    returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, id);
+                if ( rowId != -1) {
+                   // returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, rowId);   //this make sense for the test but i think for project needs to be movie_id?
+                    returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, Long.parseLong(
+                                                                 values.getAsString(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID)) );
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
@@ -205,7 +175,7 @@ public class FavoritesProvider extends ContentProvider {
 
         // Return constructed uri (this points to the newly inserted row of data)
         return returnUri;
-    }*/
+    }
 
 
     /**

@@ -18,6 +18,7 @@ package annekenl.nanomovies2;
 
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -213,24 +214,19 @@ public class TestContentProvider {
 
         Uri retUri = contentResolver.insert(FavoritesContract.FavoriteEntry.CONTENT_URI, testValues);
 
-        //Uri expectedUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, 1);
-        //attaches row id onto end of uri
+        Uri expectedUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, Long.parseLong("999999")); //*to do* remove hard coded string
 
-         /* If the insert fails, database.insert returns -1 */
-        int valueOfIdIfInsertFails = -1;
-
-        String rowidstr = retUri.getLastPathSegment();
-        int rowid = Integer.valueOf(rowidstr);
+        //---changed to append movie id--
+          //If the insert fails, database.insert returns -1
+            //int valueOfIdIfInsertFails = -1;
+            //String rowidstr = retUri.getLastPathSegment();
+             //int rowid = Integer.valueOf(rowidstr);
+        //assertTrue(insertProviderFailed, valueOfIdIfInsertFails!=-1);
 
         String insertProviderFailed = "Unable to insert item through Provider";
 
-        assertFalse(insertProviderFailed,rowid==valueOfIdIfInsertFails);
-
-        //message,expected,actual
-        //assertNotSame(insertProviderFailed,valueOfIdIfInsertFails,rowid);
-
         //assertEquals(string message, expected, actual)
-        //assertEquals(insertProviderFailed, expectedUri, retUri);
+        assertEquals(insertProviderFailed, expectedUri, retUri);
 
         //If this fails, it's likely you didn't call notifyChange in your insert method from
         // your ContentProvider.
