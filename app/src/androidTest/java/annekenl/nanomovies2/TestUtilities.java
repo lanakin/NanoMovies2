@@ -16,14 +16,84 @@
 
 package annekenl.nanomovies2;
 
+import android.content.ContentValues;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 
+import java.util.Map;
+import java.util.Set;
+
+import annekenl.nanomovies2.favdata.FavoritesContract;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+
 //code from Udacity Android Nanodegree student lessons (lesson 9)
 
 class TestUtilities {
+
+    /**
+     * Used as a convenience method to return a singleton instance of ContentValues to populate
+     * our database or insert using our ContentProvider.
+     *
+     * @return ContentValues that can be inserted into our ContentProvider or db
+     */
+    static ContentValues createTestContentValues() {
+
+        ContentValues testValues = new ContentValues();
+
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
+                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+
+
+        return testValues;
+    }
+
+
+    /**
+     * This method iterates through a set of expected values and makes various assertions that
+     * will pass if our app is functioning properly.
+     *
+     * @param error          Message when an error occurs
+     * @param valueCursor    The Cursor containing the actual values received from an arbitrary query
+     * @param expectedValues The values we expect to receive in valueCursor
+     */
+    static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
+        Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
+
+        for (Map.Entry<String, Object> entry : valueSet) {
+            String columnName = entry.getKey();
+            int index = valueCursor.getColumnIndex(columnName);
+
+            /* Test to see if the column is contained within the cursor */
+            String columnNotFoundError = "Column '" + columnName + "' not found. " + error;
+            assertFalse(columnNotFoundError, index == -1);
+
+            /* Test to see if the expected value equals the actual value (from the Cursor) */
+            String expectedValue = entry.getValue().toString();
+            String actualValue = valueCursor.getString(index);
+
+            String valuesDontMatchError = "Actual value '" + actualValue
+                    + "' did not match the expected value '" + expectedValue + "'. "
+                    + error;
+
+            assertEquals(valuesDontMatchError,
+                    expectedValue,
+                    actualValue);
+        }
+    }
+
 
     static TestContentObserver getTestContentObserver() {
         return TestContentObserver.getTestContentObserver();
