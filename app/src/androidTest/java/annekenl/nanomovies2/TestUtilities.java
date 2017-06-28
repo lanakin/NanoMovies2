@@ -31,7 +31,7 @@ import annekenl.nanomovies2.favdata.FavoritesContract;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 
-//code from Udacity Android Nanodegree student lessons (lesson 9)
+//code from Udacity Android Nanodegree student lessons (lesson 9) & Sunshine project
 
 class TestUtilities {
 
