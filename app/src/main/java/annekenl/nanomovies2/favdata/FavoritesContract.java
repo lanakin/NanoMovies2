@@ -45,15 +45,10 @@ public class FavoritesContract {
      * Possible paths that can be appended to BASE_CONTENT_URI to form valid URI's that Sunshine
      * can handle. For instance,
      *
-     *     content://com.example.android.sunshine/weather/
-     *     [           BASE_CONTENT_URI         ][ PATH_WEATHER ]
+     *     content://annekenl.nanomovies2/favorites/
+     *     [           BASE_CONTENT_URI         ][ PATH_FAVORITES ]
      *
-     * is a valid path for looking at weather data.
-     *
-     *      content://com.example.android.sunshine/givemeroot/
-     *
-     * will fail, as the ContentProvider hasn't been given any information on what to do with
-     * "givemeroot". At least, let's hope not. Don't be that dev, reader. Don't be that dev.
+     * is a valid path for looking at favorties data.
      */
     public static final String PATH_FAVORITES = "favorites";
 
@@ -97,32 +92,8 @@ public class FavoritesContract {
           to the reviews on www.themoviedb.org */
         public static final String COLUMN_REVIEWS = "reviews";
 
+        /* boolean stored as 0 or 1 for if the movie is part of the favorites collection (useful for the UI - favorite button) */
+        public static final String COLUMN_FAV_BOOL = "fav_bool";
 
-
-        /**
-         * Builds a URI that adds the weather date to the end of the forecast content URI path.
-         * This is used to query details about a single weather entry by date. This is what we
-         * use for the detail view query. We assume a normalized date is passed to this method.
-         *
-         * @param date Normalized date in milliseconds
-         * @return Uri to query details about a single weather entry
-         */
-        /*public static Uri buildWeatherUriWithDate(long date) {
-            return CONTENT_URI.buildUpon()
-                    .appendPath(Long.toString(date))
-                    .build();
-        }*/
-
-        /**
-         * Returns just the selection part of the weather query from a normalized today value.
-         * This is used to get a weather forecast from today's date. To make this easy to use
-         * in compound selection, we embed today's date as an argument in the query.
-         *
-         * @return The selection part of the weather query for today onwards
-         */
-       // public static String getSqlSelectForTodayOnwards() {
-            //long normalizedUtcNow = SunshineDateUtils.normalizeDate(System.currentTimeMillis());
-            //return WeatherEntry.COLUMN_DATE + " >= " + normalizedUtcNow;
-        //}
     }
 }

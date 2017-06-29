@@ -84,7 +84,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_gravity="center_vertical"
 
-                    android:text="@string/favorite_label"
+                    android:text="@string/favorite_label_add"
                     android:background="@color/colorAccent"
                     android:textColor="@android:color/white"
                     />

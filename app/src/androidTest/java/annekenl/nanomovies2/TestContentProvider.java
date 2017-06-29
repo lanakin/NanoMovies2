@@ -42,9 +42,6 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.fail;
 
-//import com.example.android.todolist.data.TaskContentProvider;
-//import com.example.android.todolist.data.TaskContract;
-//import com.example.android.todolist.data.TaskDbHelper;
 
 //modified from Udacity Android Nanodegree student lessons (lesson 9) & Sunshine project
 
@@ -182,20 +179,11 @@ public class TestContentProvider {
     //* Tests inserting a single row of data via a ContentResolver
      //
     @Test
-    public void testInsert() { //works but really returning the base uri with the returned row id from db.insert()
+    public void testInsert() { //works but really returning the base uri with the returned row id from db.insert() *FIXED*
 
-        //* Create values to insert *//*
-        ContentValues testValues = new ContentValues();
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
-                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+        //* Create values to insert *//
+        /* Obtain values from TestUtilities */
+        ContentValues testValues = TestUtilities.createTestContentValues();
 
         //* TestContentObserver allows us to test if notifyChange was called appropriately *//*
         TestUtilities.TestContentObserver testObserver = TestUtilities.getTestContentObserver();
@@ -243,7 +231,7 @@ public class TestContentProvider {
     //================================================================================
     // Test Query (for directory)
     //================================================================================
-     //Inserts data, then tests if a query for the tasks directory returns that data as a Cursor
+     //Inserts data, then tests if a query for the directory returns that data as a Cursor
 
     @Test
     public void testQuery() {
@@ -253,17 +241,8 @@ public class TestContentProvider {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         //* Create values to insert *//
-        ContentValues testValues = new ContentValues();
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
-                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+        /* Obtain values from TestUtilities */
+        ContentValues testValues = TestUtilities.createTestContentValues();
 
         //* Insert ContentValues into database and get a row ID back *//
         long taskRowId = database.insert(
@@ -315,17 +294,8 @@ public class TestContentProvider {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         //* Create a new row of task data *//
-        ContentValues testValues = new ContentValues();
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
-                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+        /* Obtain values from TestUtilities */
+        ContentValues testValues = TestUtilities.createTestContentValues();
 
         //* Insert ContentValues into database and get a row ID back *//
         long taskRowId = database.insert(
@@ -360,7 +330,7 @@ public class TestContentProvider {
 
 
         //* The delete method deletes the previously inserted row with COLUMN_MOVIE_ID = 999999 *//
-        Uri uriToDelete = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath("999999").build();
+        Uri uriToDelete = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath("999999").build(); //*to do* remove hard coded string
         int tasksDeleted = contentResolver.delete(uriToDelete, null, null);
 
         String deleteFailed = "Unable to delete item in the database";
@@ -376,7 +346,7 @@ public class TestContentProvider {
     }
 
     /**
-     * This method will clear all rows from the weather table in our database.
+     * This method will clear all rows from the table in our database.
      *
      * Please note:
      *

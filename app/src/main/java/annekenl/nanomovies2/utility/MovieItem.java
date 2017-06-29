@@ -17,7 +17,7 @@ public class MovieItem implements Parcelable
     private double vote_average = 0.0;
 
     private String id = "";
-    //private boolean isVideos = false;
+    private boolean isFavorite = false;
     private String[] trailers = null;
     private String[] reviews = null;
 
@@ -93,9 +93,9 @@ public class MovieItem implements Parcelable
         this.id = id;
     }
 
-    //public boolean hasVideos() { return isVideos; }
+    public boolean isFavorite() { return isFavorite; }
 
-   // public void setIsVideos(boolean isVideos) { this.isVideos = isVideos; }
+    public void toggleFavorite() { this.isFavorite = !this.isFavorite; }
 
     public String[] getTrailers() {
         return trailers;
@@ -126,7 +126,7 @@ public class MovieItem implements Parcelable
         out.writeDouble(vote_average);
 
         out.writeString(id);
-        //out.writeInt(isVideos ? 1 : 0);
+        out.writeInt(isFavorite ? 1 : 0);
         out.writeStringArray(trailers);
         out.writeStringArray(reviews);
     }
@@ -153,7 +153,7 @@ public class MovieItem implements Parcelable
         vote_average = in.readDouble();
 
         id = in.readString();
-        //isVideos = in.readInt()==1;
+        isFavorite = in.readInt()==1;
         in.readStringArray(trailers);
         in.readStringArray(reviews);
     }

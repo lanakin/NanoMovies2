@@ -12,6 +12,7 @@
     <string name="release_date_label">Release Date:</string>
     <string name="overview_label">Overview:</string>
     <string name="popularity_label">Popularity Score:</string>
-    <string name="favorite_label">+ Favorite</string>
+    <string name="favorite_label_add">+ Favorite</string>
+    <string name="favorite_label_remove">- Favorite</string>
 
 </resources>

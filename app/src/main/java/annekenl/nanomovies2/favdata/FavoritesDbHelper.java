@@ -86,6 +86,8 @@ public class FavoritesDbHelper extends SQLiteOpenHelper {
 
                 FavoriteEntry.COLUMN_REVIEWS + " TEXT NOT NULL,"                  +
 
+                FavoriteEntry.COLUMN_FAV_BOOL + " INTEGER NOT NULL,"                  +
+
                 /*
                  * To ensure this table can only contain one favorite entry per movie/(movie id record in 'TMDB'),
                  * we declare the movie id column to be unique. We also specify "ON CONFLICT REPLACE". This tells
@@ -121,4 +123,5 @@ public class FavoritesDbHelper extends SQLiteOpenHelper {
 
         /* TO DO UPDATE and KEEP USER'S EXISTING FAVORITED MOVIES */
     }
+
 }

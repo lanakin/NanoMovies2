@@ -108,6 +108,31 @@ public class FavoritesProvider extends ContentProvider {
         return matcher;
     }
 
+
+    /**
+     * Helper method to create ContentValues for Favorite Movie Item
+     */
+    public ContentValues createMovieItemContentValues(String title, String movId, String poster, String overview,
+            String rdate, String popularity, String vote_avg, int favBool, String reviews, String trailers)
+    {
+        ContentValues testValues = new ContentValues();
+
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
+                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_FAV_BOOL, 0);
+
+
+        return testValues;
+    }
+
     /**
      * In onCreate, we initialize our content provider on startup. This method is called for all
      * registered content providers on the application main thread at application launch time.
@@ -382,7 +407,7 @@ public class FavoritesProvider extends ContentProvider {
         super.shutdown();
     }
 
-
+    //FOR REFERENCE
     /**
      * Handles requests to insert a set of new rows. In Sunshine, we are only going to be
      * inserting multiple rows of data at a time from a weather forecast. There is no use case

@@ -55,6 +55,7 @@ class TestUtilities {
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
         testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
                 +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
+        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_FAV_BOOL, 0);
 
 
         return testValues;

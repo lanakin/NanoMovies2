@@ -1,5 +1,7 @@
 package annekenl.nanomovies2;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.BindingAdapter;
@@ -74,8 +76,58 @@ public class MoviesListDetailsFragment extends Fragment
     //Favorite Button
     private void markAsFavorite(View v)
     {
-        Toast t = makeText(getActivity(),"FAVORITED!", Toast.LENGTH_SHORT);
-        t.show();
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                getActivity());
+
+        // set title
+        alertDialogBuilder.setTitle("Favorite Movies Collection");
+
+        // *set dialog message*
+       if(!mMovieItem.isFavorite()) {
+           alertDialogBuilder
+                   .setMessage("Add to your Favorites")
+                   .setCancelable(false)
+                   .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int id) {
+                           Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
+                           t.show();
+
+                           binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
+                           mMovieItem.toggleFavorite();
+                           dialog.dismiss();
+                       }
+                   })
+                   .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog, int id) {
+                           dialog.dismiss();
+                       }
+                   });
+       }
+       else {
+        alertDialogBuilder
+                   .setMessage("Remove from your Favorites")
+                   .setCancelable(false)
+                   .setPositiveButton("REMOVE",new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog,int id) {
+                           Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
+                           t.show();
+
+                           binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
+                           mMovieItem.toggleFavorite();
+                           dialog.dismiss();
+                       }
+                   })
+                   .setNegativeButton("CANCEL",new DialogInterface.OnClickListener() {
+                       public void onClick(DialogInterface dialog,int id) {
+                           dialog.dismiss();
+                       }
+                   });
+       }
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
     }
 
     private void setupTrailers()

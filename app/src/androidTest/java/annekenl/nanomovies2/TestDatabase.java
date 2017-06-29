@@ -88,7 +88,7 @@ public class TestDatabase {
     public void testDuplicateMovieIDInsertBehaviorShouldReplace()
     {
 
-        /* Obtain weather values from TestUtilities */
+        /* Obtain values from TestUtilities */
         ContentValues testValues = TestUtilities.createTestContentValues();
 
         /*
@@ -282,6 +282,7 @@ public class TestDatabase {
     }
 
 
+    //FOR REFERENCE
     /**
      * This method tests the {WeatherDbHelper#onUpgrade(SQLiteDatabase, int, int)}. The proper
      * behavior for this method in our case is to simply DROP (or delete) the weather table from
@@ -415,7 +416,7 @@ public class TestDatabase {
     @Test
     public void testInsertSingleRecordIntoWeatherTable()
     {
-        // Obtain weather values from TestUtilities
+        // Obtain values from TestUtilities
         ContentValues testValues = TestUtilities.createTestContentValues();
 
        //  Insert ContentValues into database and get a row ID back
