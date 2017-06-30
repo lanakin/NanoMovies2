@@ -1,6 +1,7 @@
 package annekenl.nanomovies2;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,6 +24,7 @@ import com.squareup.picasso.Picasso;
 import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
 import annekenl.nanomovies2.utility.MovieItem;
 
+import static android.R.id.input;
 import static android.widget.Toast.makeText;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
@@ -128,6 +130,23 @@ public class MoviesListDetailsFragment extends Fragment
 
         // show it
         alertDialog.show();
+    }
+
+    private void insert() {
+        // Insert new task data via a ContentResolver
+        // Create new empty ContentValues object
+        ContentValues contentValues = new ContentValues();
+        // Put the task description and selected mPriority into the ContentValues
+        contentValues.put(TaskContract.TaskEntry.COLUMN_DESCRIPTION, input);
+        contentValues.put(TaskContract.TaskEntry.COLUMN_PRIORITY, mPriority);
+        // Insert the content values via a ContentResolver
+        Uri uri = getContentResolver().insert(TaskContract.TaskEntry.CONTENT_URI, contentValues);
+
+        // Display the URI that's returned with a Toast
+        // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
+        if(uri != null) {
+            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setupTrailers()
