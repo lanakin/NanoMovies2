@@ -1,7 +1,6 @@
 package annekenl.nanomovies2;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -23,8 +22,8 @@ import com.squareup.picasso.Picasso;
 
 import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
 import annekenl.nanomovies2.utility.MovieItem;
+import annekenl.nanomovies2.utility.MovieItemToDBHelper;
 
-import static android.R.id.input;
 import static android.widget.Toast.makeText;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
@@ -36,6 +35,7 @@ public class MoviesListDetailsFragment extends Fragment
 {
     private MovieItem mMovieItem = null;
     private FragmentMovieDetailsBinding binding;
+    //private MovieItemToDBHelper movItem2DBHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -65,6 +65,7 @@ public class MoviesListDetailsFragment extends Fragment
         setupTrailers();
         setupReviews();
 
+        setFavButtonLabel();
         binding.favButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,6 +77,15 @@ public class MoviesListDetailsFragment extends Fragment
     }
 
     //Favorite Button
+    private void setFavButtonLabel()
+    {
+        if(!mMovieItem.isFavorite()) {
+            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
+        } else {
+            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
+        }
+    }
+
     private void markAsFavorite(View v)
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
@@ -93,6 +103,8 @@ public class MoviesListDetailsFragment extends Fragment
                        public void onClick(DialogInterface dialog, int id) {
                            Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
                            t.show();
+
+                           MovieItemToDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getContext());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
                            mMovieItem.toggleFavorite();
@@ -114,6 +126,8 @@ public class MoviesListDetailsFragment extends Fragment
                            Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
                            t.show();
 
+                           MovieItemToDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getContext());
+
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
                            mMovieItem.toggleFavorite();
                            dialog.dismiss();
@@ -132,22 +146,6 @@ public class MoviesListDetailsFragment extends Fragment
         alertDialog.show();
     }
 
-    private void insert() {
-        // Insert new task data via a ContentResolver
-        // Create new empty ContentValues object
-        ContentValues contentValues = new ContentValues();
-        // Put the task description and selected mPriority into the ContentValues
-        contentValues.put(TaskContract.TaskEntry.COLUMN_DESCRIPTION, input);
-        contentValues.put(TaskContract.TaskEntry.COLUMN_PRIORITY, mPriority);
-        // Insert the content values via a ContentResolver
-        Uri uri = getContentResolver().insert(TaskContract.TaskEntry.CONTENT_URI, contentValues);
-
-        // Display the URI that's returned with a Toast
-        // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
-        if(uri != null) {
-            Toast.makeText(getBaseContext(), uri.toString(), Toast.LENGTH_LONG).show();
-        }
-    }
 
     private void setupTrailers()
     {
@@ -297,66 +295,5 @@ public class MoviesListDetailsFragment extends Fragment
             return convertView;
         }
     }
-
-
-
-      /* @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState)
-        {
-        View rootView = inflater.inflate(R.layout.fragment_movie_details, container, false);
-
-
-        ImageView poster = (ImageView) rootView.findViewById(R.id.movieDetailsImageView);
-
-        //form complete poster path url
-        SharedPreferences prefs =  getActivity().getSharedPreferences(MOVIE_SETTINGS_PREFS, 0);
-        String baseUrl = prefs.getString(MoviesListFragment.MOVIE_POSTER_BASE_URL,"");
-        String posterSize = prefs.getString(MoviesListFragment.MOVIEDB_POSTER_SIZE, "");
-        String posterPath = mMovieItem.getPoster_path();
-
-        String posterUrl = baseUrl + posterSize + posterPath;
-
-        Picasso.with(getActivity()).load(posterUrl).noFade()
-                .placeholder(android.R.drawable.progress_indeterminate_horizontal)
-                .into(poster);
-
-
-        TextView title = (TextView) rootView.findViewById(R.id.movieDetailsTitle);
-        title.setText(mMovieItem.getTitle());
-
-
-        TextView userRating = (TextView) rootView.findViewById(R.id.movieDetailsRatings);
-        userRating.setText(mMovieItem.getVote_average()+"");
-
-
-       TextView releaseDate = (TextView) rootView.findViewById(R.id.movieDetailsReleaseDate);
-
-        String finalDateStr = "";
-        if(mMovieItem.getRelease_date() != null) {
-            String dateParts[] = mMovieItem.getRelease_date().split("-");
-            if(dateParts.length == 3) {
-                finalDateStr += dateParts[1];
-                finalDateStr += "-" + dateParts[2];
-                if(dateParts[0].length() == 4)
-                    finalDateStr += "-" + dateParts[0].substring(2,4);
-            }
-        }
-
-        releaseDate.setText(finalDateStr+"");
-
-
-        TextView popularity = (TextView) rootView.findViewById(R.id.movieDetailsPopularity);
-        String temp = String.format("%.2f",mMovieItem.getPopularity());
-        popularity.setText(temp);
-
-
-        TextView plot = (TextView) rootView.findViewById(R.id.movieDetailsOverview);
-        plot.setText(mMovieItem.getOverview());
-
-
-        return rootView;
-    }
-*/
 
 }

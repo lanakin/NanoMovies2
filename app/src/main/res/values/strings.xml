@@ -7,6 +7,7 @@
     <string name="sort_menu">Sort By</string>
     <string name="most_popular">Most Popular</string>
     <string name="highest_rated">Highest Rated</string>
+    <string name="my_favorites">My Favorites</string>
 
     <string name="user_rating_label">User Rating:</string>
     <string name="release_date_label">Release Date:</string>
