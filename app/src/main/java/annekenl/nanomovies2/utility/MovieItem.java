@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by annekenl1 on 11/7/16.
+ * Created by annekenl1
  */
 public class MovieItem implements Parcelable
 {
@@ -96,6 +96,8 @@ public class MovieItem implements Parcelable
     public boolean isFavorite() { return isFavorite; }
 
     public void toggleFavorite() { this.isFavorite = !this.isFavorite; }
+
+    public void setFavorite(boolean fav) { isFavorite = fav; }
 
     public String[] getTrailers() {
         return trailers;

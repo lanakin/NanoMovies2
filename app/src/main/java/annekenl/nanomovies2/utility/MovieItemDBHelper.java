@@ -13,7 +13,7 @@ import annekenl.nanomovies2.favdata.FavoritesContract;
  * Created by annekenl1 on 7/7/17.
  */
 
-public class MovieItemToDBHelper
+public class MovieItemDBHelper
 {
 
     /** The columns of data that we are interested in displaying  (ALL)
@@ -35,16 +35,17 @@ public class MovieItemToDBHelper
     /** We store the indices of the values in the array of Strings above to more quickly be able
      * to access the data from our query. If the order of the Strings above changes, these
      * indices must be adjusted to match the order of the Strings.*/
-    public static final int INDEX_TITLE = 0;
-    public static final int INDEX_MOVIE_ID = 1;
-    public static final int INDEX_POSTER = 2;
-    public static final int INDEX_OVERVIEW = 3;
-    public static final int INDEX_RDATE = 4;
-    public static final int INDEX_POPULARITY = 5;
-    public static final int INDEX_VOTE_AVG = 6;
-    public static final int INDEX_TRAILERS = 7;
-    public static final int INDEX_REVIEWS = 8;
-    public static final int INDEX_FAV_BOOL = 9;
+    //0 = _id
+    public static final int INDEX_TITLE = 1;
+    public static final int INDEX_MOVIE_ID = 2;
+    public static final int INDEX_POSTER = 3;
+    public static final int INDEX_OVERVIEW = 4;
+    public static final int INDEX_RDATE = 5;
+    public static final int INDEX_POPULARITY = 6;
+    public static final int INDEX_VOTE_AVG = 7;
+    public static final int INDEX_TRAILERS = 8;
+    public static final int INDEX_REVIEWS = 9;
+    public static final int INDEX_FAV_BOOL = 10;
 
 
     /** This ID will be used to identify the Loader responsible for loading the weather details

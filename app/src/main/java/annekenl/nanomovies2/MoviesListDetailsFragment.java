@@ -22,7 +22,7 @@ import com.squareup.picasso.Picasso;
 
 import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
 import annekenl.nanomovies2.utility.MovieItem;
-import annekenl.nanomovies2.utility.MovieItemToDBHelper;
+import annekenl.nanomovies2.utility.MovieItemDBHelper;
 
 import static android.widget.Toast.makeText;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
@@ -35,7 +35,7 @@ public class MoviesListDetailsFragment extends Fragment
 {
     private MovieItem mMovieItem = null;
     private FragmentMovieDetailsBinding binding;
-    //private MovieItemToDBHelper movItem2DBHelper;
+    //private MovieItemDBHelper movItem2DBHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -104,7 +104,7 @@ public class MoviesListDetailsFragment extends Fragment
                            Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
                            t.show();
 
-                           MovieItemToDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getContext());
+                           MovieItemDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getContext());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
                            mMovieItem.toggleFavorite();
@@ -126,7 +126,7 @@ public class MoviesListDetailsFragment extends Fragment
                            Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
                            t.show();
 
-                           MovieItemToDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getContext());
+                           MovieItemDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getContext());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
                            mMovieItem.toggleFavorite();

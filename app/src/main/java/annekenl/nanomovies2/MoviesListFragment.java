@@ -42,24 +42,26 @@ import annekenl.nanomovies2.favdata.FavoritesContract;
 import annekenl.nanomovies2.utility.MovieDBConfigItem;
 import annekenl.nanomovies2.utility.MovieDBConfigParser;
 import annekenl.nanomovies2.utility.MovieItem;
-import annekenl.nanomovies2.utility.MovieItemToDBHelper;
+import annekenl.nanomovies2.utility.MovieItemDBHelper;
 
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIEDB_CONFIG_CHECK;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_DB_API_KEY;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
-import static annekenl.nanomovies2.utility.MovieItemToDBHelper.ID_FAVORITES_LOADER;
+import static annekenl.nanomovies2.utility.MovieItemDBHelper.ID_FAVORITES_LOADER;
 
 
 public class MoviesListFragment extends Fragment implements MovieDBConfigParser.OnDownloadFinished, AdapterView.OnItemClickListener
 {
     private GridView postersGrid;
     private ArrayList<MovieItem> mMovies = new ArrayList<MovieItem>();
+    private ArrayList<MovieItem> mFavMovies = new ArrayList<MovieItem>();
 
     public static final String MOVIE_POSTER_BASE_URL = "MOVIE_POSTER_BASE_URL";
     public static final String MOVIEDB_POSTER_SIZE= "MOVIE_POSTER_SIZE";
     public static final String MOVIE_ITEM_KEY= "MOVIE_ITEM";
 
     private MovieAdapter mMovieAdapter;
+    private MovieAdapter mFavMovieAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -129,19 +131,23 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         {
             sortMoviesByMostPopular();
             mMovieAdapter.notifyDataSetChanged();
+            postersGrid.setAdapter(mMovieAdapter); //might be swapping away from favorites
             return true;
         }
         else if (id == R.id.highest_rated_menu)
         {
             sortMoviesByHighestRated();
             mMovieAdapter.notifyDataSetChanged();
+            postersGrid.setAdapter(mMovieAdapter);
             return true;
         }
         else if(id == R.id.my_favorites_menu)
         {
             getActivity().getSupportLoaderManager().initLoader(
-                    MovieItemToDBHelper.ID_FAVORITES_LOADER, null,
+                    MovieItemDBHelper.ID_FAVORITES_LOADER, null,
                     new FavoriteMoviesParser());
+//            mFavMovieAdapter.notifyDataSetChanged();
+//            postersGrid.setAdapter(mFavMovieAdapter);
             return true;
         }
 
@@ -167,8 +173,10 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         View rootView = inflater.inflate(R.layout.fragment_movies_list, container, false);
         postersGrid = (GridView) rootView.findViewById(R.id.moviesPostersGrid);
 
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(mMovies);
         postersGrid.setAdapter(mMovieAdapter);
+
+        mFavMovieAdapter = new MovieAdapter(mFavMovies);
 
         postersGrid.setOnItemClickListener(this);
 
@@ -179,19 +187,20 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id)
     {
-        MovieItem mMovieItem = mMovies.get(position);
+        //MovieItem mMovieItem = mMovies.get(position);
+        MovieItem selectedMovieItem = (MovieItem) parent.getItemAtPosition(position);
 
-        if(mMovieItem.getTrailers() == null
-                || mMovieItem.getReviews() == null)
+        if(selectedMovieItem.getTrailers() == null
+                || selectedMovieItem.getReviews() == null)
         {
             //get trailers
-            new FetchTrailersTask().execute(mMovieItem); //notifydatasetchanged()
+            new FetchTrailersTask().execute(selectedMovieItem); //notifydatasetchanged()
 
             //get reviews
-            new FetchReviewsTask().execute(mMovieItem);  //" "; transitionToDetails()
+            new FetchReviewsTask().execute(selectedMovieItem);  //" "; transitionToDetails()
         }
         else {
-            transitionToDetails(mMovieItem);
+            transitionToDetails(selectedMovieItem);
         }
     }
 
@@ -210,6 +219,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     }
 
 
+    /* used by the default movie list */
     private void sortMoviesByMostPopular()
     {
         Collections.sort(mMovies, new Comparator<MovieItem>() {
@@ -233,16 +243,24 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     }
 
 
-    private class MovieAdapter extends BaseAdapter {
+    private class MovieAdapter extends BaseAdapter
+    {
+        private ArrayList<MovieItem> moviesList;
+
+        public MovieAdapter(ArrayList<MovieItem> moviesList)
+        {
+            super();
+            this.moviesList = moviesList;
+        }
 
         @Override
         public int getCount() {
-            return mMovies.size();
+            return moviesList.size();
         }
 
         @Override
         public MovieItem getItem(int position) {
-            return mMovies.get(position);
+            return moviesList.get(position);
         }
 
         @Override
@@ -259,7 +277,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
                         container, false);
             }
 
-            MovieItem currMovieItem = (MovieItem) mMovies.get(position);
+            MovieItem currMovieItem = (MovieItem) moviesList.get(position);
             ImageView imageView = (ImageView) convertView.findViewById(R.id.moviePostersImageView);
 
             //form complete poster path url
@@ -393,23 +411,13 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
                     movieItem.setTitle(currMovie.getString("title"));
                     movieItem.setPopularity(currMovie.getDouble("popularity"));
                     movieItem.setVote_average(currMovie.getDouble("vote_average"));
-
                     movieItem.setId(currMovie.getInt("id")+"");
-                    //movieItem.setIsVideos(currMovie.getBoolean("video")); //all results have this as false...
 
-                    //get trailers
-                    //new FetchTrailersTask().execute(movieItem); //notifydatasetchanged
-
-                    //get reviews
-                    //new FetchReviewsTask().execute(movieItem); //this is about 40 asynctasks total here, it works but could be
-                                                   //problematic and unnecessary until user wants additional details for a movie
                     mMovies.add(movieItem);
                 }
 
                 sortMoviesByMostPopular();
                 mMovieAdapter.notifyDataSetChanged();
-               //postersGrid.setAdapter(mMovieAdapter);
-
             }
         }
         catch (Exception e) {
@@ -670,7 +678,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         //private Uri mUri;
 
         // This connects our Activity into the loader lifecycle.
-        // getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this);
+        // getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this); //on fav menu option chosen
 
 
         /* *
@@ -707,59 +715,44 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
          * selected from the forecast.
          *
          * @param loader The cursor loader that finished.
-         * @param data   The cursor that is being returned.
+         * @param cursor   The cursor that is being returned.
          */
         @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor data)
+        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
         {
-        /* * Before we bind the data to the UI that will display that data, we need to check the
-         * cursor to make sure we have the results that we are expecting. In order to do that, we
-         * check to make sure the cursor is not null and then we call moveToFirst on the cursor.
-         * Although it may not seem obvious at first, moveToFirst will return true if it contains
-         * a valid first row of data.
-         *
-         * If we have valid data, we want to continue on to bind that data to the UI. If we don't
-         * have any data to bind, we just return from this method.*/
+            Log.d("onloadfin",cursor.getCount()+"");
+            try {
+                while (cursor.moveToNext())
+                {
+                    MovieItem movieItem = new MovieItem();
+                    movieItem.setPosterPath(cursor.getString(MovieItemDBHelper.INDEX_POSTER));
+                    movieItem.setOverview(cursor.getString(MovieItemDBHelper.INDEX_OVERVIEW));
+                    movieItem.setRelease_date(cursor.getString(MovieItemDBHelper.INDEX_RDATE));
+                    movieItem.setTitle(cursor.getString(MovieItemDBHelper.INDEX_TITLE));
+                    movieItem.setPopularity(Double.parseDouble(cursor.getString(MovieItemDBHelper.INDEX_POPULARITY)));
+                    movieItem.setVote_average(Double.parseDouble(cursor.getString(MovieItemDBHelper.INDEX_VOTE_AVG)));
+                    movieItem.setId(cursor.getString(MovieItemDBHelper.INDEX_MOVIE_ID));
 
-            boolean cursorHasValidData = false;
-            if (data != null && data.moveToFirst()) {
-                //We have valid data, continue on to bind the data to the UI
-                        cursorHasValidData = true;
+                    //trailers & reviews
+                    String temp = cursor.getString(MovieItemDBHelper.INDEX_TRAILERS);
+                    String[] tempArr = MovieItemDBHelper.convertStringToArray(temp);
+                    movieItem.setTrailers(tempArr);
+
+                    temp = cursor.getString(MovieItemDBHelper.INDEX_REVIEWS);
+                    tempArr = MovieItemDBHelper.convertStringToArray(temp);
+                    movieItem.setReviews(tempArr);
+
+                    movieItem.setFavorite(true);
+
+                    mFavMovies.add(movieItem);
+                }//end of cursor
+            }
+            catch(Exception e) {
+                e.printStackTrace();
             }
 
-            if (!cursorHasValidData) {
-               // No data to display, simply return and do nothing
-                return;
-            }
-
-            //parseFavoritesDBData() - create and return an ArrayList of MovieItems for MoviesListFragment to use
-            for(int i = 0; i < results.length(); i++)  //page 1 about 20 items ~
-            {
-                JSONObject currMovie = results.getJSONObject(i);
-
-                MovieItem movieItem = new MovieItem();
-                movieItem.setPosterPath(currMovie.getString("poster_path"));
-                movieItem.setOverview(currMovie.getString("overview"));
-                movieItem.setRelease_date(currMovie.getString("release_date"));
-                movieItem.setTitle(currMovie.getString("title"));
-                movieItem.setPopularity(currMovie.getDouble("popularity"));
-                movieItem.setVote_average(currMovie.getDouble("vote_average"));
-
-                movieItem.setId(currMovie.getInt("id")+"");
-                //movieItem.setIsVideos(currMovie.getBoolean("video")); //all results have this as false...
-
-                //get trailers
-                //new FetchTrailersTask().execute(movieItem); //notifydatasetchanged
-
-                //get reviews
-                //new FetchReviewsTask().execute(movieItem); //this is about 40 asynctasks total here, it works but could be
-                //problematic and unnecessary until user wants additional details for a movie
-                mMovies.add(movieItem);
-            }
-
-            //sortMoviesByMostPopular();
-            mMovieAdapter.notifyDataSetChanged();
-            //postersGrid.setAdapter(mMovieAdapter)
+            mFavMovieAdapter.notifyDataSetChanged();
+            postersGrid.setAdapter(mFavMovieAdapter);
         }
 
         /* Called when a previously created loader is being reset, thus making its data unavailable.
