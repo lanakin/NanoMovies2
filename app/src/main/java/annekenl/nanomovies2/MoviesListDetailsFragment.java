@@ -76,13 +76,21 @@ public class MoviesListDetailsFragment extends Fragment
         return rootView;
     }
 
-    //Favorite Button
+    //Favorite Button - on details view load
     private void setFavButtonLabel()
     {
-        if(!mMovieItem.isFavorite()) {
+       /* if(!mMovieItem.isFavorite()) {
             binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
         } else {
             binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
+        }*/
+
+        if(MovieItemDBHelper.query(mMovieItem,getActivity().getContentResolver(),getContext()))
+        {
+            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
+        }
+        else {
+            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
         }
     }
 

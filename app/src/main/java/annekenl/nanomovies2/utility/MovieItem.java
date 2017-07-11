@@ -99,6 +99,10 @@ public class MovieItem implements Parcelable
 
     public void setFavorite(boolean fav) { isFavorite = fav; }
 
+   // public void isInDB() {
+       // MovieItemDBHelper.query();
+    //}
+
     public String[] getTrailers() {
         return trailers;
     }

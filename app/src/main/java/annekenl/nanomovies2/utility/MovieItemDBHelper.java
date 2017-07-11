@@ -3,6 +3,7 @@ package annekenl.nanomovies2.utility;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -121,7 +122,6 @@ public class MovieItemDBHelper
             int deleted = contentResolver.delete(uriToDelete,null,null);
 
             // Display the URI that's returned with a Toast
-            // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
             if (deleted == 1) {
                 Toast.makeText(context, uriToDelete.toString() + " deleted", Toast.LENGTH_LONG).show();
             } else {
@@ -130,5 +130,42 @@ public class MovieItemDBHelper
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+
+    public static boolean query(MovieItem movItem, ContentResolver contentResolver, Context context)
+    {
+        boolean isFound = false;
+
+        try {
+            //Long movId = Long.parseLong(movItem.getId());
+
+            Uri uri = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath(movItem.getId()).build();
+
+            // query via a ContentResolver
+            Cursor found = contentResolver.query(
+                    uri,
+                    //* Columns; leaving this null returns every column in the table *//
+                    null,
+                    //* Optional specification for columns in the "where" clause above *//
+                    null,
+                    //* Values for "where" clause *//
+                    null,
+                    //* Sort order to return in Cursor *//
+                    null);
+
+            // Display the URI that's returned with a Toast
+            // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
+            if (found!=null && found.moveToFirst()) {
+                Toast.makeText(context, uri.toString() + " found in db", Toast.LENGTH_LONG).show();
+                isFound = true;
+            } else {
+                Log.e("SINGLE QUERY FAIL", uri.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return isFound;
     }
 }

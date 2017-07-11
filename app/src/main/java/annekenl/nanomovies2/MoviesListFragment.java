@@ -752,6 +752,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
             }
 
             mFavMovieAdapter.notifyDataSetChanged();
+            postersGrid.invalidateViews();
             postersGrid.setAdapter(mFavMovieAdapter);
         }
 
