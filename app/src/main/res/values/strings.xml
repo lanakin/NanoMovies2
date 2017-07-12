@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">NanoMovies</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello!</string>
+    <string name="popular_movies_list">Popular Movies</string>
+    <string name="high_rated_movies_list">Highest Rated Movies</string>
+    <string name="favorite_movies_list">My Favorite Movies</string>
 
     <string name="sort_menu">Sort By</string>
     <string name="most_popular">Most Popular</string>

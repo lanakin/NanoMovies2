@@ -1,14 +1,10 @@
 package annekenl.nanomovies2;
 
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -38,36 +34,37 @@ import java.util.Comparator;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import annekenl.nanomovies2.favdata.FavoritesContract;
 import annekenl.nanomovies2.utility.MovieDBConfigItem;
 import annekenl.nanomovies2.utility.MovieDBConfigParser;
 import annekenl.nanomovies2.utility.MovieItem;
-import annekenl.nanomovies2.utility.MovieItemDBHelper;
 
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIEDB_CONFIG_CHECK;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_DB_API_KEY;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
-import static annekenl.nanomovies2.utility.MovieItemDBHelper.ID_FAVORITES_LOADER;
 
 
 public class MoviesListFragment extends Fragment implements MovieDBConfigParser.OnDownloadFinished, AdapterView.OnItemClickListener
 {
     private GridView postersGrid;
     private ArrayList<MovieItem> mMovies = new ArrayList<MovieItem>();
-    private ArrayList<MovieItem> mFavMovies = new ArrayList<MovieItem>();
+    private MovieAdapter mMovieAdapter;
+
+    public static String mainMoviesTitle = "";
 
     public static final String MOVIE_POSTER_BASE_URL = "MOVIE_POSTER_BASE_URL";
     public static final String MOVIEDB_POSTER_SIZE= "MOVIE_POSTER_SIZE";
     public static final String MOVIE_ITEM_KEY= "MOVIE_ITEM";
 
-    private MovieAdapter mMovieAdapter;
-    private MovieAdapter mFavMovieAdapter;
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        mainMoviesTitle = getResources().getString(R.string.popular_movies_list);
+        getActivity().setTitle(mainMoviesTitle);
         setHasOptionsMenu(true);
+
+        mMovieAdapter = new MovieAdapter(mMovies);
 
         if(shouldCheckMoviePosterConfig())
         {
@@ -116,6 +113,11 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
 
 
     @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.movies_list_menu, menu);
     }
@@ -131,38 +133,43 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         {
             sortMoviesByMostPopular();
             mMovieAdapter.notifyDataSetChanged();
-            postersGrid.setAdapter(mMovieAdapter); //might be swapping away from favorites
+
+            mainMoviesTitle = getResources().getString(R.string.popular_movies_list);
+            getActivity().setTitle(mainMoviesTitle);
             return true;
         }
         else if (id == R.id.highest_rated_menu)
         {
             sortMoviesByHighestRated();
             mMovieAdapter.notifyDataSetChanged();
-            postersGrid.setAdapter(mMovieAdapter);
+
+            mainMoviesTitle = getResources().getString(R.string.high_rated_movies_list);
+            getActivity().setTitle(mainMoviesTitle);
             return true;
         }
         else if(id == R.id.my_favorites_menu)
         {
-            getActivity().getSupportLoaderManager().initLoader(
-                    MovieItemDBHelper.ID_FAVORITES_LOADER, null,
-                    new FavoriteMoviesParser());
-//            mFavMovieAdapter.notifyDataSetChanged();
-//            postersGrid.setAdapter(mFavMovieAdapter);
+            transitionToFavorites();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void transitionToFavorites()
+    {
+        FavMoviesListFragment frag = new FavMoviesListFragment();
+
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.container, frag)
+                .addToBackStack("fav_movie_list")
+                .commit();
+    }
+
 
     private void updateMoviesList()
     {
         new FetchMoviesTask().execute();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
 
@@ -173,10 +180,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         View rootView = inflater.inflate(R.layout.fragment_movies_list, container, false);
         postersGrid = (GridView) rootView.findViewById(R.id.moviesPostersGrid);
 
-        mMovieAdapter = new MovieAdapter(mMovies);
         postersGrid.setAdapter(mMovieAdapter);
-
-        mFavMovieAdapter = new MovieAdapter(mFavMovies);
 
         postersGrid.setOnItemClickListener(this);
 
@@ -670,102 +674,5 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
             e.printStackTrace();
         }
     }
-
-
-    //modified from Sunshine example project - Udacity Android Nanodegree
-    private class FavoriteMoviesParser implements LoaderManager.LoaderCallbacks<Cursor>
-    {
-        //private Uri mUri;
-
-        // This connects our Activity into the loader lifecycle.
-        // getSupportLoaderManager().initLoader(ID_DETAIL_LOADER, null, this); //on fav menu option chosen
-
-
-        /* *
-          * Creates and returns a CursorLoader that loads the data for our URI and stores it in a Cursor.
-          *
-          * @param loaderId The loader ID for which we need to create a loader
-          * @param loaderArgs Any arguments supplied by the caller
-          *
-          * @return A new Loader instance that is ready to start loading.*/
-        @Override
-        public Loader<Cursor> onCreateLoader(int loaderId, Bundle loaderArgs) {
-
-            switch (loaderId) {
-
-                case ID_FAVORITES_LOADER:
-
-                    return new CursorLoader(getActivity(),
-                            FavoritesContract.FavoriteEntry.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            null);
-
-                default:
-                    throw new RuntimeException("Loader Not Implemented: " + loaderId);
-            }
-        }
-
-        /**
-         * Runs on the main thread when a load is complete. If initLoader is called (we call it from
-         * onCreate in DetailActivity) and the LoaderManager already has completed a previous load
-         * for this Loader, onLoadFinished will be called immediately. Within onLoadFinished, we bind
-         * the data to our views so the user can see the details of the weather on the date they
-         * selected from the forecast.
-         *
-         * @param loader The cursor loader that finished.
-         * @param cursor   The cursor that is being returned.
-         */
-        @Override
-        public void onLoadFinished(Loader<Cursor> loader, Cursor cursor)
-        {
-            Log.d("onloadfin",cursor.getCount()+"");
-            try {
-                while (cursor.moveToNext())
-                {
-                    MovieItem movieItem = new MovieItem();
-                    movieItem.setPosterPath(cursor.getString(MovieItemDBHelper.INDEX_POSTER));
-                    movieItem.setOverview(cursor.getString(MovieItemDBHelper.INDEX_OVERVIEW));
-                    movieItem.setRelease_date(cursor.getString(MovieItemDBHelper.INDEX_RDATE));
-                    movieItem.setTitle(cursor.getString(MovieItemDBHelper.INDEX_TITLE));
-                    movieItem.setPopularity(Double.parseDouble(cursor.getString(MovieItemDBHelper.INDEX_POPULARITY)));
-                    movieItem.setVote_average(Double.parseDouble(cursor.getString(MovieItemDBHelper.INDEX_VOTE_AVG)));
-                    movieItem.setId(cursor.getString(MovieItemDBHelper.INDEX_MOVIE_ID));
-
-                    //trailers & reviews
-                    String temp = cursor.getString(MovieItemDBHelper.INDEX_TRAILERS);
-                    String[] tempArr = MovieItemDBHelper.convertStringToArray(temp);
-                    movieItem.setTrailers(tempArr);
-
-                    temp = cursor.getString(MovieItemDBHelper.INDEX_REVIEWS);
-                    tempArr = MovieItemDBHelper.convertStringToArray(temp);
-                    movieItem.setReviews(tempArr);
-
-                    movieItem.setFavorite(true);
-
-                    mFavMovies.add(movieItem);
-                }//end of cursor
-            }
-            catch(Exception e) {
-                e.printStackTrace();
-            }
-
-            mFavMovieAdapter.notifyDataSetChanged();
-            postersGrid.invalidateViews();
-            postersGrid.setAdapter(mFavMovieAdapter);
-        }
-
-        /* Called when a previously created loader is being reset, thus making its data unavailable.
-         * The application should at this point remove any references it has to the Loader's data.
-         * Since we don't store any of this cursor's data, there are no references we need to remove.
-         *
-         * @param loader The Loader that is being reset.
-        */
-        @Override
-        public void onLoaderReset(Loader<Cursor> loader) {
-        }
-    }
-
 
 }

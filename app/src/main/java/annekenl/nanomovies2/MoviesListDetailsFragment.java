@@ -85,7 +85,10 @@ public class MoviesListDetailsFragment extends Fragment
             binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
         }*/
 
-        if(MovieItemDBHelper.query(mMovieItem,getActivity().getContentResolver(),getContext()))
+        mMovieItem.setFavorite(MovieItemDBHelper
+                .query(mMovieItem,getActivity().getContentResolver(),getContext()));
+
+        if(mMovieItem.isFavorite())
         {
             binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
         }
