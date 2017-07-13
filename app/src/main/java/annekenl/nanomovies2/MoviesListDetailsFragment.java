@@ -1,13 +1,13 @@
 package annekenl.nanomovies2;
 
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.BindingAdapter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +16,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -24,7 +23,6 @@ import annekenl.nanomovies2.databinding.FragmentMovieDetailsBinding;
 import annekenl.nanomovies2.utility.MovieItem;
 import annekenl.nanomovies2.utility.MovieItemDBHelper;
 
-import static android.widget.Toast.makeText;
 import static annekenl.nanomovies2.NanoMoviesApplication.MOVIE_SETTINGS_PREFS;
 
 /**
@@ -86,7 +84,7 @@ public class MoviesListDetailsFragment extends Fragment
         }*/
 
         mMovieItem.setFavorite(MovieItemDBHelper
-                .query(mMovieItem,getActivity().getContentResolver(),getContext()));
+                .query(mMovieItem,getActivity().getContentResolver(),getActivity()));
 
         if(mMovieItem.isFavorite())
         {
@@ -112,13 +110,14 @@ public class MoviesListDetailsFragment extends Fragment
                    .setCancelable(false)
                    .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
-                           Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
-                           t.show();
+                           //Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
+                          // t.show();
 
-                           MovieItemDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getContext());
+                           MovieItemDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getActivity());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
                            mMovieItem.toggleFavorite();
+
                            dialog.dismiss();
                        }
                    })
@@ -134,13 +133,14 @@ public class MoviesListDetailsFragment extends Fragment
                    .setCancelable(false)
                    .setPositiveButton("REMOVE",new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog,int id) {
-                           Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
-                           t.show();
+                           //Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
+                           //t.show();
 
-                           MovieItemDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getContext());
+                           MovieItemDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getActivity());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
                            mMovieItem.toggleFavorite();
+
                            dialog.dismiss();
                        }
                    })

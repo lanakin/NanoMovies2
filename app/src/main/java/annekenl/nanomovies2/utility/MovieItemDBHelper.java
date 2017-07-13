@@ -6,7 +6,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.Toast;
 
 import annekenl.nanomovies2.favdata.FavoritesContract;
 
@@ -83,9 +82,10 @@ public class MovieItemDBHelper
         Uri uri = contentResolver.insert(FavoritesContract.FavoriteEntry.CONTENT_URI, values);
 
         // Display the URI that's returned with a Toast
-        // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
         if(uri != null) {
-            Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show();
+          //  Toast.makeText(context, uri.toString(), Toast.LENGTH_LONG).show();
+        } else {
+            Log.e("SINGLE INSERT FAIL",uri.toString());
         }
     }
 
@@ -123,7 +123,7 @@ public class MovieItemDBHelper
 
             // Display the URI that's returned with a Toast
             if (deleted == 1) {
-                Toast.makeText(context, uriToDelete.toString() + " deleted", Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, uriToDelete.toString() + " deleted", Toast.LENGTH_LONG).show();
             } else {
                 Log.e("SINGLE DELETE FAIL", deleted + " ITEMS");
             }
@@ -157,8 +157,9 @@ public class MovieItemDBHelper
             // Display the URI that's returned with a Toast
             // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
             if (found!=null && found.moveToFirst()) {
-                Toast.makeText(context, uri.toString() + " found in db", Toast.LENGTH_LONG).show();
+                //Toast.makeText(context, uri.toString() + " found in db", Toast.LENGTH_LONG).show();
                 isFound = true;
+                found.close();
             } else {
                 Log.e("SINGLE QUERY FAIL", uri.toString());
             }

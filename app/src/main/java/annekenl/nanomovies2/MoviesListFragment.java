@@ -4,7 +4,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment; //support.v4.
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -76,6 +76,8 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
             //will used last stored config info
             updateMoviesList();
         }
+
+        setRetainInstance(true); //keep the sort/chosen movie list of user on orientation change
     }
 
     @Override
@@ -160,7 +162,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
     {
         FavMoviesListFragment frag = new FavMoviesListFragment();
 
-        getActivity().getSupportFragmentManager().beginTransaction()
+        getActivity().getFragmentManager().beginTransaction()
                 .replace(R.id.container, frag)
                 .addToBackStack("fav_movie_list")
                 .commit();
@@ -216,7 +218,7 @@ public class MoviesListFragment extends Fragment implements MovieDBConfigParser.
         mArgs.putParcelable(MOVIE_ITEM_KEY,movieItem);
         frag.setArguments(mArgs);
 
-        getActivity().getSupportFragmentManager().beginTransaction()
+        getActivity().getFragmentManager().beginTransaction()
                 .replace(R.id.container, frag)
                 .addToBackStack("movie_list_details")
                 .commit();

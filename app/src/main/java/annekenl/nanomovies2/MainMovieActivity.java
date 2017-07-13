@@ -1,28 +1,21 @@
 package annekenl.nanomovies2;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 public class MainMovieActivity extends AppCompatActivity
 {
-    //private String abTitle = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        /*Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);*/
-       // if(!abTitle.isEmpty())
-          //  this.setTitle(abTitle);
-
         if (savedInstanceState == null)
         {
-            getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                     .add(R.id.container, new MoviesListFragment())
                     //.addToBackStack("main_movies_list") //1st fragment
                     .commit();
@@ -31,16 +24,7 @@ public class MainMovieActivity extends AppCompatActivity
             this.setTitle(abTitle);
         }
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
     }
-
-  //  public void setActionBarTitle(String abTitle)
-    //{
-      //  this.abTitle = abTitle;
-        //this.setTitle(abTitle); //works as a simple way to change the action bar title
-   // }
-    //apparently can also do getActivity().setTitle("");
 
     @Override
     public void onBackPressed()
@@ -48,7 +32,7 @@ public class MainMovieActivity extends AppCompatActivity
         super.onBackPressed();
         Log.d("main activity","onBackPressed");
 
-        FragmentManager fm = getSupportFragmentManager();
+        FragmentManager fm = getFragmentManager();
         int backstackCount = fm.getBackStackEntryCount();
         if (backstackCount >= 1) {
             FragmentManager.BackStackEntry backstack = fm

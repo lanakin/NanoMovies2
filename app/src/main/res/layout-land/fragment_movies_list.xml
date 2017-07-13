@@ -17,38 +17,17 @@
         android:verticalSpacing="2dp"
 
         android:numColumns="3"
+        />
 
-
+    <TextView
+        android:id="@+id/empty_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="There are no movies for this list"
+        android:layout_margin="10dp"
+        android:textSize="30dp"
+        android:gravity="center"
         />
 
 
 </LinearLayout>
-
-<!--
-<GridView
-        android:id="@+id/moviesPostersGrid"
-
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        android:horizontalSpacing="0dp"
-        android:verticalSpacing="0dp"
-
-        android:numColumns="auto_fit"
-
-        />
--->
-
-
-<!--  android:stretchMode="spacingWidthUniform"
-        android:columnWidth="150dp"
-        -->
-
-<!--
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:cacheColorHint="@android:color/transparent"
-        android:gravity="center"
-        android:numColumns="2"
--->
