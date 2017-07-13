@@ -282,64 +282,12 @@ public class TestDatabase {
     }
 
 
-    //FOR REFERENCE
-    /**
-     * This method tests the {WeatherDbHelper#onUpgrade(SQLiteDatabase, int, int)}. The proper
-     * behavior for this method in our case is to simply DROP (or delete) the weather table from
-     * the database and then have the table recreated.
-     */
     @Test
     public void testOnUpgradeBehavesCorrectly()
     {
         /* TO DO UPDATE and KEEP USER'S EXISTING FAVORITED MOVIES */
-
-        //for reference
-       /* testInsertSingleRecordIntoWeatherTable();
-
-        dbHelper.onUpgrade(database, 13, 14);
-
-        *//*
-         * This Cursor will contain the names of each table in our database and we will use it to
-         * make sure that our weather table is still in the database after upgrading.
-         *//*
-        Cursor tableNameCursor = database.rawQuery(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='" + REFLECTED_TABLE_NAME + "'",
-                null);
-
-        *//*
-         * Our database should only contain one table, and so the above query should have one
-         * record in the cursor that queried for our table names.
-         *//*
-        int expectedTableCount = 1;
-        String shouldHaveSingleTable = "There should only be one table returned from this query.";
-        assertEquals(shouldHaveSingleTable,
-                expectedTableCount,
-                tableNameCursor.getCount());
-
-        *//* We are done verifying our table names, so we can close this cursor *//*
-        tableNameCursor.close();
-
-        Cursor shouldBeEmptyWeatherCursor = database.query(
-                REFLECTED_TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
-
-        int expectedRecordCountAfterUpgrade = 0;
-        *//* We will finally verify that our weather table is empty after *//*
-        String weatherTableShouldBeEmpty =
-                "Weather table should be empty after upgrade, but wasn't."
-                        + "\nNumber of records: ";
-        assertEquals(weatherTableShouldBeEmpty,
-                expectedRecordCountAfterUpgrade,
-                shouldBeEmptyWeatherCursor.getCount());
-
-        *//* Test is over, close the cursor *//*
-        database.close();*/
     }
+
 
     /**
      * This method tests that our database contains all of the tables that we think it should
@@ -360,9 +308,6 @@ public class TestDatabase {
 
        //  Here, we add the name of our only table in this particular database
         tableNameHashSet.add(FavoritesContract.FavoriteEntry.TABLE_NAME);
-         //Students, here is where you would add any other table names if you had them
-//        tableNameHashSet.add(MyAwesomeSuperCoolTableName);
-//        tableNameHashSet.add(MyOtherCoolTableNameThatContainsOtherCoolData);
 
         // We think the database is open, let's verify that here
         String databaseIsNotOpen = "The database should be open and isn't";

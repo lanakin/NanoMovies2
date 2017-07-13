@@ -32,15 +32,6 @@ public class MovieDBConfigItem
         this.tmdb_image_base_url = tmdb_image_base_url;
     }
 
-   // public String[] getBackdrop_sizes() {
-        //return backdrop_sizes;
-    //}
-
-   // public void setBackdrop_sizes(String[] backdrop_sizes) {
-        //this.backdrop_sizes = backdrop_sizes;
-    //}
-
-
     public String[] getPoster_sizes() {
         return poster_sizes;
     }

@@ -32,13 +32,7 @@ import static annekenl.nanomovies2.favdata.FavoritesContract.FavoriteEntry.TABLE
 
 /**
  * This class serves as the ContentProvider for all of a user's favorited movies data.
- * This class allows us to bulkInsert data, query data, and delete data.
- *
- * Although ContentProvider implementation requires the implementation of additional methods to
- * perform single inserts, updates, and the ability to get the type of the data from a URI.
- * However, here, they are not implemented for the sake of brevity and simplicity. If you would
- * like, you may implement them on your own. However, we are not going to be teaching how to do
- * so in this course.
+ * This class allows us to insert data, query data, and delete data.
  *
  */
 public class FavoritesProvider extends ContentProvider {
@@ -66,16 +60,6 @@ public class FavoritesProvider extends ContentProvider {
     /**
      * Creates the UriMatcher that will match each URI to the CODE_FAVORITE and
      * CODE_WEATHER_WITH_DATE constants defined above.
-     * <p>
-     * It's possible you might be thinking, "Why create a UriMatcher when you can use regular
-     * expressions instead? After all, we really just need to match some patterns, and we can
-     * use regular expressions to do that right?" Because you're not crazy, that's why.
-     * <p>
-     * UriMatcher does all the hard work for you. You just have to tell it which code to match
-     * with which URI, and it does the rest automagically. Remember, the best programmers try
-     * to never reinvent the wheel. If there is a solution for a problem that exists and has
-     * been tested and proven, you should almost always use it unless there is a compelling
-     * reason not to.
      *
      * @return A UriMatcher that correctly matches the constants for CODE_FAVORITES and CODE_WEATHER_WITH_DATE
      */
@@ -108,30 +92,6 @@ public class FavoritesProvider extends ContentProvider {
         return matcher;
     }
 
-
-    /**
-     * Helper method to create ContentValues for Favorite Movie Item
-     */
-    public ContentValues createMovieItemContentValues(String title, String movId, String poster, String overview,
-            String rdate, String popularity, String vote_avg, int favBool, String reviews, String trailers)
-    {
-        ContentValues testValues = new ContentValues();
-
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TITLE, "Test Title");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID, "999999");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POSTER, "/h2mhfbEBGABSHo2vXG1ECMKAJa7.jpg");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_OVERVIEW, "a short summary");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_RDATE, "2017-02-28");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_POPULARITY, "42.211");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_VOTE_AVG, "6.1");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_TRAILERS, "DN1uhnnKscY,DN1uhgfdjkKscY,DN1uwrtuyiKscY");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_REVIEWS, "https://www.themoviedb.org/review/59303b4c92514166e9000f76,"
-                +"https://www.themoviedb.org/review/59303b4c92514166e9000f76,https://www.themoviedb.org/review/59303b4c92514166e9000f76");
-        testValues.put(FavoritesContract.FavoriteEntry.COLUMN_FAV_BOOL, 0);
-
-
-        return testValues;
-    }
 
     /**
      * In onCreate, we initialize our content provider on startup. This method is called for all
@@ -182,7 +142,6 @@ public class FavoritesProvider extends ContentProvider {
                 // Inserting values into tasks table
                 long rowId = db.insert(TABLE_NAME, null, values);
                 if ( rowId != -1) {
-                   // returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, rowId);   //this make sense for the test but i think for project needs to be movie_id?
                     returnUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, Long.parseLong(
                                                                  values.getAsString(FavoritesContract.FavoriteEntry.COLUMN_MOVIE_ID)) );
                 } else {
@@ -204,8 +163,7 @@ public class FavoritesProvider extends ContentProvider {
 
 
     /**
-     * Handles query requests from clients. We will use this method in Sunshine to query for all
-     * of our weather data as well as to query for the weather on a particular day.
+     * Handles query requests from clients.
      *
      * @param uri           The URI to query
      * @param projection    The list of columns to put into the cursor. If null, all columns are
@@ -406,57 +364,5 @@ public class FavoritesProvider extends ContentProvider {
         mOpenHelper.close();
         super.shutdown();
     }
-
-    //FOR REFERENCE
-    /**
-     * Handles requests to insert a set of new rows. In Sunshine, we are only going to be
-     * inserting multiple rows of data at a time from a weather forecast. There is no use case
-     * for inserting a single row of data into our ContentProvider, and so we are only going to
-     * implement bulkInsert. In a normal ContentProvider's implementation, you will probably want
-     * to provide proper functionality for the insert method as well.
-     *
-     * @param uri    The content:// URI of the insertion request.
-     * @param values An array of sets of column_name/value pairs to add to the database.
-     *               This must not be {@code null}.
-     *
-     * @return The number of values that were inserted.
-     */
-    /*@Override
-    public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
-        final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
-
-        switch (sUriMatcher.match(uri)) {
-
-            case CODE_WEATHER:
-                db.beginTransaction();
-                int rowsInserted = 0;
-                try {
-                    for (ContentValues value : values) {
-                        long weatherDate =
-                                value.getAsLong(FavoritesContract.WeatherEntry.COLUMN_DATE);
-                        if (!SunshineDateUtils.isDateNormalized(weatherDate)) {
-                            throw new IllegalArgumentException("Date must be normalized to insert");
-                        }
-
-                        long _id = db.insert(FavoritesContract.WeatherEntry.TABLE_NAME, null, value);
-                        if (_id != -1) {
-                            rowsInserted++;
-                        }
-                    }
-                    db.setTransactionSuccessful();
-                } finally {
-                    db.endTransaction();
-                }
-
-                if (rowsInserted > 0) {
-                    getContext().getContentResolver().notifyChange(uri, null);
-                }
-
-                return rowsInserted;
-
-            default:
-                return super.bulkInsert(uri, values);
-        }
-    }*/
 
 }

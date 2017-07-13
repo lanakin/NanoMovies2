@@ -10,7 +10,7 @@ import android.util.Log;
 import annekenl.nanomovies2.favdata.FavoritesContract;
 
 /**
- * Created by annekenl1 on 7/7/17.
+ * Created by annekenl
  */
 
 public class MovieItemDBHelper
@@ -46,14 +46,6 @@ public class MovieItemDBHelper
     public static final int INDEX_TRAILERS = 8;
     public static final int INDEX_REVIEWS = 9;
     public static final int INDEX_FAV_BOOL = 10;
-
-
-    /** This ID will be used to identify the Loader responsible for loading the weather details
-     * for a particular day. In some cases, one Activity can deal with many Loaders. However, in
-     * our case, there is only one. We will still use this ID to initialize the loader and create
-     * the loader for best practice. Please note that 353 was chosen arbitrarily. You can use
-     * whatever number you like, so long as it is unique and consistent.*/
-    public static final int ID_FAVORITES_LOADER = 513;
 
     public static String strSeparator = "__,__";
 
@@ -114,7 +106,6 @@ public class MovieItemDBHelper
     public static void delete(MovieItem movItem, ContentResolver contentResolver, Context context)
     {
         try {
-            //Long movId = Long.parseLong(movItem.getId());
 
             Uri uriToDelete = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath(movItem.getId()).build();
 
@@ -138,7 +129,6 @@ public class MovieItemDBHelper
         boolean isFound = false;
 
         try {
-            //Long movId = Long.parseLong(movItem.getId());
 
             Uri uri = FavoritesContract.FavoriteEntry.CONTENT_URI.buildUpon().appendPath(movItem.getId()).build();
 
@@ -155,7 +145,6 @@ public class MovieItemDBHelper
                     null);
 
             // Display the URI that's returned with a Toast
-            // [Hint] Don't forget to call finish() to return to MainActivity after this insert is complete
             if (found!=null && found.moveToFirst()) {
                 //Toast.makeText(context, uri.toString() + " found in db", Toast.LENGTH_LONG).show();
                 isFound = true;

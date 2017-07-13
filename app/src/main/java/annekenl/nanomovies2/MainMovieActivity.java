@@ -23,7 +23,6 @@ public class MainMovieActivity extends AppCompatActivity
             String abTitle = savedInstanceState.getString("title");
             this.setTitle(abTitle);
         }
-
     }
 
     @Override

@@ -58,12 +58,6 @@ public class TestContentProvider {
      */
     @Before
     public void setUp() {
-        /* Use TaskDbHelper to get access to a writable database */
-        //FavoritesDbHelper dbHelper = new FavoritesDbHelper(mContext);
-        //SQLiteDatabase database = dbHelper.getWritableDatabase();
-        //database.delete(FavoritesContract.FavoriteEntry.TABLE_NAME, null, null);
-        //database.close();
-
         deleteAllRecordsFromFavoritesTable();
     }
 
@@ -204,13 +198,6 @@ public class TestContentProvider {
 
         Uri expectedUri = ContentUris.withAppendedId(FavoritesContract.FavoriteEntry.CONTENT_URI, Long.parseLong("999999")); //*to do* remove hard coded string
 
-        //---changed to append movie id--
-          //If the insert fails, database.insert returns -1
-            //int valueOfIdIfInsertFails = -1;
-            //String rowidstr = retUri.getLastPathSegment();
-             //int rowid = Integer.valueOf(rowidstr);
-        //assertTrue(insertProviderFailed, valueOfIdIfInsertFails!=-1);
-
         String insertProviderFailed = "Unable to insert item through Provider";
 
         //assertEquals(string message, expected, actual)
@@ -253,7 +240,7 @@ public class TestContentProvider {
                 testValues);
 
         String insertFailed = "Unable to insert directly into the database";
-        //assertTrue(insertFailed, taskRowId != -1);
+
         assertFalse(insertFailed, taskRowId == -1);
 
         //* We are done with the database, close it now. *//*
@@ -273,7 +260,7 @@ public class TestContentProvider {
 
 
         String queryFailed = "Query failed to return a valid Cursor";
-        //assertTrue(queryFailed, taskCursor != null);
+
         assertFalse(queryFailed, taskCursor == null);
 
         /* We are done with the cursor, close it now. */
@@ -309,7 +296,7 @@ public class TestContentProvider {
         database.close();
 
         String insertFailed = "Unable to insert into the database";
-        //assertTrue(insertFailed, taskRowId != -1);
+
         assertFalse(insertFailed, taskRowId == -1);
 
 
@@ -334,7 +321,7 @@ public class TestContentProvider {
         int tasksDeleted = contentResolver.delete(uriToDelete, null, null);
 
         String deleteFailed = "Unable to delete item in the database";
-        //assertTrue(deleteFailed, tasksDeleted != 0);
+
         assertFalse(deleteFailed, tasksDeleted == 0);
 
         //If this fails, it's likely you didn't call notifyChange in your delete method from your ContentProvider.
@@ -368,105 +355,5 @@ public class TestContentProvider {
         /* Always close the database when you're through with it */
         database.close();
     }
-
-
-    //FOR REFERENCE
-    /**
-     * This test deletes all records from the weather table using the ContentProvider. It also
-     * verifies that registered ContentObservers receive onChange callbacks when data is deleted.
-     *
-     * It finally queries the ContentProvider to make sure that the table has been successfully
-     * cleared.
-     *
-     * NOTE: This does not delete the table itself. It just deletes the rows of data contained
-     * within the table.
-     *
-     * Potential causes for failure:
-     *
-     *   1) Within { WeatherProvider#delete(Uri, String, String[])}, you didn't call
-     *    getContext().getContentResolver().notifyChange(uri, null) after performing a deletion.
-     *
-     *   2) The cursor returned from the query was null
-     *
-     *   3) After the attempted deletion, the ContentProvider still provided weather data
-     */
-    @Test
-    public void testDeleteAllRecordsFromProvider() {
-
-       /* *//*
-         * Ensure there are records to delete from the database. Due to our setUp method, the
-         * database will not have any records in it prior to this method being run.
-         *//*
-        testBulkInsert();
-
-        *//*
-         * TestContentObserver allows us to test weather or not notifyChange was called
-         * appropriately. We will use that here to make sure that notifyChange is called when a
-         * deletion occurs.
-         *//*
-        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
-
-        *//*
-         * A ContentResolver provides us access to the content model. We can use it to perform
-         * deletions and queries at our CONTENT_URI
-         *//*
-        ContentResolver contentResolver = mContext.getContentResolver();
-
-        *//* Register a content observer to be notified of changes to data at a given URI (weather) *//*
-        contentResolver.registerContentObserver(
-                *//* URI that we would like to observe changes to *//*
-                WeatherContract.WeatherEntry.CONTENT_URI,
-                *//* Whether or not to notify us if descendants of this URI change *//*
-                true,
-                *//* The observer to register (that will receive notifyChange callbacks) *//*
-                weatherObserver);
-
-        *//* Delete all of the rows of data from the weather table *//*
-        contentResolver.delete(
-                WeatherContract.WeatherEntry.CONTENT_URI,
-                *//* Columns; leaving this null returns every column in the table *//*
-                null,
-                *//* Optional specification for columns in the "where" clause above *//*
-                null);
-
-        *//* Perform a query of the data that we've just deleted. This should be empty. *//*
-        Cursor shouldBeEmptyCursor = contentResolver.query(
-                WeatherContract.WeatherEntry.CONTENT_URI,
-                *//* Columns; leaving this null returns every column in the table *//*
-                null,
-                *//* Optional specification for columns in the "where" clause above *//*
-                null,
-                *//* Values for "where" clause *//*
-                null,
-                *//* Sort order to return in Cursor *//*
-                null);
-
-        *//*
-         * If this fails, it's likely you didn't call notifyChange in your delete method from
-         * your ContentProvider.
-         *//*
-        weatherObserver.waitForNotificationOrFail();
-
-        *//*
-         * waitForNotificationOrFail is synchronous, so after that call, we are done observing
-         * changes to content and should therefore unregister this observer.
-         *//*
-        contentResolver.unregisterContentObserver(weatherObserver);
-
-        *//* In some cases, the cursor can be null. That's actually a failure case here. *//*
-        String cursorWasNull = "Cursor was null.";
-        assertNotNull(cursorWasNull, shouldBeEmptyCursor);
-
-        *//* If the count of the cursor is not zero, all records weren't deleted *//*
-        String allRecordsWereNotDeleted =
-                "Error: All records were not deleted from weather table during delete";
-        assertEquals(allRecordsWereNotDeleted,
-                0,
-                shouldBeEmptyCursor.getCount());
-
-        *//* Always close your cursor *//*
-        shouldBeEmptyCursor.close();*/
-    }
-
 
 }

@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Register the TaskContentProvider -->
+        <!-- Register the ContentProvider -->
         <!-- Set name, authorities, and exported attributes -->
         <!-- exported = false limits access to this ContentProvider to only this app -->
         <provider

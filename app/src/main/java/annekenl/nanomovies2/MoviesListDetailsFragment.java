@@ -33,7 +33,6 @@ public class MoviesListDetailsFragment extends Fragment
 {
     private MovieItem mMovieItem = null;
     private FragmentMovieDetailsBinding binding;
-    //private MovieItemDBHelper movItem2DBHelper;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -77,12 +76,6 @@ public class MoviesListDetailsFragment extends Fragment
     //Favorite Button - on details view load
     private void setFavButtonLabel()
     {
-       /* if(!mMovieItem.isFavorite()) {
-            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
-        } else {
-            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
-        }*/
-
         mMovieItem.setFavorite(MovieItemDBHelper
                 .query(mMovieItem,getActivity().getContentResolver(),getActivity()));
 
@@ -110,9 +103,6 @@ public class MoviesListDetailsFragment extends Fragment
                    .setCancelable(false)
                    .setPositiveButton("ADD", new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog, int id) {
-                           //Toast t = makeText(getActivity(), "FAVORITED!", Toast.LENGTH_SHORT);
-                          // t.show();
-
                            MovieItemDBHelper.insert(mMovieItem,getActivity().getContentResolver(),getActivity());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_remove));
@@ -133,9 +123,6 @@ public class MoviesListDetailsFragment extends Fragment
                    .setCancelable(false)
                    .setPositiveButton("REMOVE",new DialogInterface.OnClickListener() {
                        public void onClick(DialogInterface dialog,int id) {
-                           //Toast t = makeText(getActivity(),"Removed from Favorites", Toast.LENGTH_SHORT);
-                           //t.show();
-
                            MovieItemDBHelper.delete(mMovieItem,getActivity().getContentResolver(),getActivity());
 
                            binding.favButton.setText(getResources().getString(R.string.favorite_label_add));
@@ -169,27 +156,6 @@ public class MoviesListDetailsFragment extends Fragment
         {
             final String[] trailers = mMovieItem.getTrailers();
             trailersChoices.setAdapter(new ArrayItemAdapter(trailers,"Trailer"));
-
-            //didn't like that spinner behavior is such that i couldn't play the same selected item twice/multiple times in a row
-            /*trailersChoices.post(new Runnable() { //queued to not run on initial load
-                @Override
-                public void run() {
-                    trailersChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                                //String youtubeBaseUrl = "https://www.youtube.com/watch?v=";
-                                //String youtubeKey = trailers[position];
-
-                                //startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(youtubeBaseUrl + youtubeKey)));
-                        }
-
-                        @Override
-                        public void onNothingSelected(AdapterView<?> parent) {
-                            //do nothing - this is not however called if don't change the item...
-                        }
-                    });
-                }
-            });*/
 
             ImageView img = binding.movieDetailsTrailerChoices.itemIcon;
             img.setImageResource(R.drawable.ic_play_arrow_black_24px);
