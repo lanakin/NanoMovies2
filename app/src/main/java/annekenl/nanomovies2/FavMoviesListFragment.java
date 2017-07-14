@@ -38,7 +38,7 @@ import static annekenl.nanomovies2.R.id.container;
 public class FavMoviesListFragment extends Fragment implements AdapterView.OnItemClickListener
 {
     private GridView favPostersGrid;
-    private ArrayList<MovieItem> mFavMovies;
+    private ArrayList<MovieItem> mFavMovies = new ArrayList<MovieItem>();
     private MovieAdapter mFavMovieAdapter;
 
     @Override
@@ -47,6 +47,12 @@ public class FavMoviesListFragment extends Fragment implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
 
         getActivity().setTitle(getResources().getString(R.string.favorite_movies_list));
+
+        mFavMovieAdapter = new MovieAdapter(mFavMovies);
+
+        new FavoriteMoviesTask().execute();
+
+        setRetainInstance(true);
     }
 
     @Override
@@ -55,6 +61,8 @@ public class FavMoviesListFragment extends Fragment implements AdapterView.OnIte
     {
         View rootView = inflater.inflate(R.layout.fragment_movies_list, container, false);
         favPostersGrid = (GridView) rootView.findViewById(R.id.moviesPostersGrid);
+
+        favPostersGrid.setAdapter(mFavMovieAdapter);
 
         favPostersGrid.setOnItemClickListener(this);
 
@@ -66,8 +74,11 @@ public class FavMoviesListFragment extends Fragment implements AdapterView.OnIte
     {
         super.onStart();
 
-        Log.d("favs","onstart");
-        new FavoriteMoviesTask().execute(); //favorites in db might have change if user removes a favorite in the details screen
+        //Log.d("favs","onstart");
+        //new FavoriteMoviesTask().execute();
+            // favorites in db might have change if user removes a favorite in the details screen
+            // removing this in favor of requirement that user be able to return to same position
+            // in list.
     }
 
 
@@ -177,11 +188,14 @@ public class FavMoviesListFragment extends Fragment implements AdapterView.OnIte
         {
             if(c != null) {
 
-                Log.d("onpostexec",c.getCount()+"");
+                //Log.d("onpostexec",c.getCount()+"");
 
                 try {
-                    mFavMovies = new ArrayList<MovieItem>();
-                    mFavMovieAdapter = new MovieAdapter(mFavMovies);
+                    // favorites in db might have change if user removes a favorite in the details screen
+                    // removing this in favor of requirement that user be able to return to same position
+                    // in list.
+                        //mFavMovies = new ArrayList<MovieItem>();
+                        //mFavMovieAdapter = new MovieAdapter(mFavMovies);
 
                     while (c.moveToNext())
                     {
@@ -209,8 +223,8 @@ public class FavMoviesListFragment extends Fragment implements AdapterView.OnIte
                     }//end of c
 
                     c.close();
-                    //mFavMovieAdapter.notifyDataSetChanged();
-                    favPostersGrid.setAdapter(mFavMovieAdapter);
+                    mFavMovieAdapter.notifyDataSetChanged();
+                    //favPostersGrid.setAdapter(mFavMovieAdapter);
 
                     if(mFavMovies.isEmpty()) {
                        favPostersGrid.setVisibility(View.GONE);  //reveals a textview with 'empty message'
